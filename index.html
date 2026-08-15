@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Emaily — Email API &amp; Routing Service</title>
+<meta name="description" content="Emaily routes every email your app sends — submissions, templates, and delivery, behind one API key." />
+<link rel="icon" href="assets/logo.png" />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN, no build step) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Sora', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          body: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="font-body">
+
+<!-- Toasts -->
+<div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 items-end"></div>
+
+<div id="app">
+
+  <!-- ============================================================
+       NAVBAR
+       ============================================================ -->
+  <header id="navbar" class="glass sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-3 cursor-pointer" data-nav="landing">
+        <img src="assets/logo.png" alt="Emaily" class="h-9 w-9 object-contain drop-shadow-[0_0_12px_rgba(139,92,246,0.55)]" />
+        <span class="font-display font-bold text-lg tracking-tight">Emaily</span>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-8" id="nav-landing-links">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#live-routing" class="nav-link">How it works</a>
+        <a href="#dev" class="nav-link">For developers</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <!-- Guest state -->
+        <div id="nav-guest-actions" class="flex items-center gap-3">
+          <button class="btn btn-ghost btn-sm" data-action="show-auth" data-tab="login">Sign in</button>
+          <button class="btn btn-aurora btn-sm" data-action="show-auth" data-tab="register">Get your API key</button>
+        </div>
+        <!-- Authenticated state -->
+        <div id="nav-user-actions" class="hidden items-center gap-3">
+          <button class="btn btn-ghost btn-sm" data-action="go-dashboard">Dashboard</button>
+          <span id="nav-user-email" class="hidden sm:inline text-sm text-secondary font-mono"></span>
+          <button class="btn btn-icon btn-ghost" data-action="logout" title="Log out" aria-label="Log out">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       VIEW: LANDING
+       ============================================================ -->
+  <main id="view-landing" data-view>
+
+    <!-- HERO -->
+    <section class="relative max-w-7xl mx-auto px-6 pt-24 pb-20 overflow-hidden">
+      <div class="aurora-glow-orb w-80 h-80 bg-violet-600/30 -top-20 -left-20"></div>
+      <div class="aurora-glow-orb w-96 h-96 bg-cyan-500/20 top-40 right-0"></div>
+
+      <div class="relative max-w-3xl">
+        <div class="badge-pill mb-6">
+          <span class="dot"></span>
+          Email API &amp; Routing Engine
+        </div>
+        <h1 class="font-display text-5xl md:text-6xl font-extrabold leading-[1.05] tracking-tight mb-6">
+          Route every email
+          <span class="text-gradient-aurora">your app sends.</span>
+        </h1>
+        <p class="text-lg text-secondary max-w-xl mb-9 leading-relaxed">
+          Emaily sits between your forms and your inbox. One API key handles routing,
+          templating, retries, and delivery history — so your backend never has to
+          think about SMTP again.
+        </p>
+        <div class="flex flex-wrap items-center gap-4">
+          <button class="btn btn-aurora" data-action="show-auth" data-tab="register">
+            Get your API key
+          </button>
+          <a href="#live-routing" class="btn btn-ghost">See how routing works</a>
+        </div>
+      </div>
+
+      <!-- Feature cards, laid out per the Aurora Glass reference -->
+      <div id="features" class="relative grid md:grid-cols-3 gap-5 mt-16">
+        <div class="glass glass-card p-7">
+          <div class="w-10 h-10 rounded-lg mb-5 flex items-center justify-center" style="background: var(--aurora-gradient-soft)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--aurora-cyan)" stroke-width="2"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+          </div>
+          <h3 class="font-display font-semibold text-lg mb-2">Smart Routing</h3>
+          <p class="text-secondary text-sm mb-6 leading-relaxed">Every submission is matched to the right project, template, and sending service automatically.</p>
+          <button class="btn btn-ghost btn-sm" data-action="show-auth" data-tab="register">Explore routing</button>
+        </div>
+        <div class="glass glass-card p-7">
+          <div class="w-10 h-10 rounded-lg mb-5 flex items-center justify-center" style="background: var(--aurora-gradient-soft)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--aurora-cyan)" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18"/></svg>
+          </div>
+          <h3 class="font-display font-semibold text-lg mb-2">Instant Templates</h3>
+          <p class="text-secondary text-sm mb-6 leading-relaxed">Write HTML once, protect it with reCAPTCHA and domain checks, and reuse it across submissions.</p>
+          <button class="btn btn-ghost btn-sm" data-action="show-auth" data-tab="register">Build a template</button>
+        </div>
+        <div class="glass glass-card p-7">
+          <div class="w-10 h-10 rounded-lg mb-5 flex items-center justify-center" style="background: var(--aurora-gradient-soft)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--aurora-cyan)" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-4 4"/></svg>
+          </div>
+          <h3 class="font-display font-semibold text-lg mb-2">Delivery Insights</h3>
+          <p class="text-secondary text-sm mb-6 leading-relaxed">See every submission's status, retry failures with one click, and read an AI summary of what went wrong.</p>
+          <button class="btn btn-ghost btn-sm" data-action="show-auth" data-tab="register">View delivery logs</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIGNATURE: LIVE ROUTING -->
+    <section id="live-routing" class="max-w-5xl mx-auto px-6 py-10">
+      <div class="glass glass-panel p-8 md:p-10">
+        <p class="badge-pill mb-6">The instant a form submits</p>
+        <div class="grid md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
+
+          <!-- payload -->
+          <div class="code-block">
+<span class="tok-punc">{</span>
+  <span class="tok-key">"to"</span><span class="tok-punc">:</span> <span class="tok-str">"[email protected]"</span><span class="tok-punc">,</span>
+  <span class="tok-key">"template"</span><span class="tok-punc">:</span> <span class="tok-str">"contact-form"</span><span class="tok-punc">,</span>
+  <span class="tok-key">"fields"</span><span class="tok-punc">:</span> <span class="tok-punc">{</span> <span class="tok-key">"name"</span><span class="tok-punc">:</span> <span class="tok-str">"Sara"</span> <span class="tok-punc">}</span>
+<span class="tok-punc">}</span>
+          </div>
+
+          <!-- track -->
+          <div class="flex flex-col items-center gap-2 px-2">
+            <span class="text-tertiary text-xs font-mono hidden md:block">routing</span>
+            <div class="routing-track w-16 md:w-20">
+              <div class="routing-dot"></div>
+            </div>
+          </div>
+
+          <!-- delivered card -->
+          <div class="glass rounded-xl p-5 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style="background: var(--success-bg)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div>
+              <p class="text-sm font-semibold">Delivered</p>
+              <p class="text-tertiary text-xs font-mono">contact-form → smtp-primary</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS (real sequence, numbered) -->
+    <section class="max-w-6xl mx-auto px-6 py-20">
+      <h2 class="font-display text-3xl font-bold text-center mb-14">Three steps, every time</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="relative">
+          <span class="font-display text-5xl font-extrabold text-gradient-aurora">01</span>
+          <h3 class="font-display font-semibold text-lg mt-3 mb-2">Submit</h3>
+          <p class="text-secondary text-sm leading-relaxed">Your form posts to <code class="font-mono text-xs">/api/submit/{'{'}publicApiKey{'}'}</code>. Emaily checks the domain, CAPTCHA, and rate limits before it accepts anything.</p>
+        </div>
+        <div class="relative">
+          <span class="font-display text-5xl font-extrabold text-gradient-aurora">02</span>
+          <h3 class="font-display font-semibold text-lg mt-3 mb-2">Route</h3>
+          <p class="text-secondary text-sm leading-relaxed">The submission is queued, matched to a template and a sending service, and picked up for delivery.</p>
+        </div>
+        <div class="relative">
+          <span class="font-display text-5xl font-extrabold text-gradient-aurora">03</span>
+          <h3 class="font-display font-semibold text-lg mt-3 mb-2">Deliver</h3>
+          <p class="text-secondary text-sm leading-relaxed">You get a delivery record with status and history. Failed sends can be retried in one click from your dashboard.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOR DEVELOPERS -->
+    <section id="dev" class="max-w-5xl mx-auto px-6 py-10">
+      <div class="grid md:grid-cols-2 gap-10 items-center">
+        <div>
+          <h2 class="font-display text-3xl font-bold mb-4">Built for the backend you already have</h2>
+          <p class="text-secondary leading-relaxed mb-6">No SDK to install. Point any form or server at your project's public key and Emaily takes it from there.</p>
+          <button class="btn btn-aurora" data-action="show-auth" data-tab="register">Create a project</button>
+        </div>
+        <div class="code-block">
+<span class="tok-punc">curl -X POST \</span>
+  https://api.emaily.dev/api/submit/pk_live_9f2a \
+  -H <span class="tok-str">"Content-Type: application/json"</span> \
+  -d <span class="tok-str">'{"name":"Sara","message":"Hi!"}'</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLOSING CTA -->
+    <section class="max-w-5xl mx-auto px-6 py-24 text-center">
+      <div class="glass glass-panel px-8 py-14 relative overflow-hidden">
+        <div class="aurora-glow-orb w-72 h-72 bg-cyan-500/20 -bottom-24 -right-10"></div>
+        <h2 class="relative font-display text-3xl md:text-4xl font-bold mb-4">Stop babysitting SMTP.</h2>
+        <p class="relative text-secondary mb-8 max-w-md mx-auto">Get an API key, wire up one endpoint, and let Emaily route the rest.</p>
+        <button class="relative btn btn-aurora" data-action="show-auth" data-tab="register">Get your API key</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="max-w-7xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 border-t" style="border-color: var(--glass-border)">
+    <div class="flex items-center gap-2">
+      <img src="assets/logo.png" alt="Emaily" class="h-6 w-6 object-contain" />
+      <span class="font-display font-semibold text-sm">Emaily</span>
+    </div>
+    <p class="text-tertiary text-xs">© 2026 Emaily. Email API &amp; routing for developers.</p>
+  </footer>
+
+  <!-- ============================================================
+       VIEW: AUTH (login / register)
+       ============================================================ -->
+  <section id="view-auth" data-view class="hidden min-h-[80vh] flex items-center justify-center px-6 py-16">
+    <div class="w-full max-w-md">
+      <div class="glass glass-panel p-8">
+        <div class="flex items-center gap-1 mb-8 p-1 rounded-full glass" style="width: fit-content;">
+          <button class="btn btn-sm" data-auth-tab="login" style="border-radius: var(--radius-pill);">Sign in</button>
+          <button class="btn btn-sm" data-auth-tab="register" style="border-radius: var(--radius-pill);">Register</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <form id="form-login" class="space-y-4">
+          <div>
+            <label class="field-label" for="login-email">Email</label>
+            <input class="input-glass" type="email" id="login-email" name="email" placeholder="[email protected]" required />
+          </div>
+          <div>
+            <label class="field-label" for="login-password">Password</label>
+            <input class="input-glass" type="password" id="login-password" name="password" placeholder="••••••••" required />
+          </div>
+          <p class="field-error hidden" data-error-for="login"></p>
+          <button type="submit" class="btn btn-aurora w-full justify-center">
+            <span class="btn-label">Sign in</span>
+          </button>
+          <button type="button" class="text-xs text-tertiary hover:text-secondary transition-colors block mx-auto" data-action="forgot-password">
+            Forgot your password?
+          </button>
+        </form>
+
+        <!-- REGISTER FORM -->
+        <form id="form-register" class="space-y-4 hidden">
+          <div>
+            <label class="field-label" for="register-name">Name</label>
+            <input class="input-glass" type="text" id="register-name" name="name" placeholder="Sara Ahmed" required />
+          </div>
+          <div>
+            <label class="field-label" for="register-email">Email</label>
+            <input class="input-glass" type="email" id="register-email" name="email" placeholder="[email protected]" required />
+          </div>
+          <div>
+            <label class="field-label" for="register-password">Password</label>
+            <input class="input-glass" type="password" id="register-password" name="password" placeholder="At least 8 characters" required minlength="8" />
+          </div>
+          <p class="field-error hidden" data-error-for="register"></p>
+          <button type="submit" class="btn btn-aurora w-full justify-center">
+            <span class="btn-label">Create account</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       VIEW: DASHBOARD
+       ============================================================ -->
+  <div id="view-dashboard" data-view class="hidden">
+    <div id="dashboard-shell" class="max-w-7xl mx-auto px-6 py-8 grid gap-6" style="grid-template-columns: 220px 1fr;">
+
+      <aside id="sidebar" class="flex flex-col gap-1 h-fit sticky top-24">
+        <button class="sidebar-link is-active" data-dash-tab="overview">
+          <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          Overview
+        </button>
+        <button class="sidebar-link" data-dash-tab="projects">
+          <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          Projects
+        </button>
+        <button class="sidebar-link" data-dash-tab="billing">
+          <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Billing
+        </button>
+        <button class="sidebar-link" data-dash-tab="account">
+          <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Account
+        </button>
+        <div class="my-2 h-px" style="background: var(--glass-border)"></div>
+        <button class="sidebar-link" data-action="logout">
+          <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Log out
+        </button>
+      </aside>
+
+      <main id="dashboard-content" class="min-w-0">
+        <!-- injected by app.js -->
+      </main>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal root -->
+<div id="modal-root" class="hidden fixed inset-0 z-[90]"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
