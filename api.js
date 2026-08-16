@@ -2,11 +2,24 @@
    EMAILY — api.js
    Central API configuration + generic fetch wrapper + services.
 
-   TO POINT THE FRONTEND AT A DIFFERENT BACKEND, CHANGE THIS
+   TO POINT THE FRONTEND AT YOUR REAL C# BACKEND, CHANGE THIS
    ONE LINE:
    ============================================================ */
 export const BASE_URL = 'http://localhost:5000/api';
 /* ============================================================ */
+
+/* ============================================================
+   MOCK BACKEND SWITCH
+   true  -> every request is served by mockDB.js (localStorage),
+            no network call is attempted at all.
+   false -> requests go to BASE_URL. If the real API is
+            unreachable (offline, not started yet, CORS error),
+            the wrapper automatically falls back to the mock so
+            you're never blocked while the C# backend is down.
+   ============================================================ */
+export const USE_MOCK = true;
+
+import { mockFetch } from './mockDB.js';
 
 const ACCESS_TOKEN_KEY = 'emaily_access_token';
 const REFRESH_TOKEN_KEY = 'emaily_refresh_token';
@@ -28,7 +41,7 @@ export const tokenStore = {
 };
 
 /* ----------------------------------------------------------
-   ApiError — thrown for any non-2xx response
+   ApiError — thrown for any non-2xx response, real or mock
    ---------------------------------------------------------- */
 export class ApiError extends Error {
   constructor(message, status, data) {
@@ -40,13 +53,42 @@ export class ApiError extends Error {
 }
 
 /* ----------------------------------------------------------
+   Transport: real fetch, with a mock fallback on network failure
+   ---------------------------------------------------------- */
+let warnedFallback = false;
+
+async function transport(method, endpoint, { token, body, isFormData }) {
+  if (USE_MOCK) {
+    return mockFetch(method, endpoint, { token, body });
+  }
+
+  const url = `${BASE_URL}${endpoint}`;
+  const headers = {};
+  if (!isFormData) headers['Content-Type'] = 'application/json';
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  try {
+    return await fetch(url, {
+      method,
+      headers,
+      body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
+    });
+  } catch (networkErr) {
+    if (!warnedFallback) {
+      console.warn('[Emaily] Backend unreachable at', BASE_URL, '— falling back to mock data for this session.');
+      warnedFallback = true;
+    }
+    return mockFetch(method, endpoint, { token, body });
+  }
+}
+
+/* ----------------------------------------------------------
    Generic request wrapper
-   - Prepends BASE_URL
+   - Prepends BASE_URL (real mode) or routes to mockDB (mock mode)
    - Attaches Authorization: Bearer <token> when auth !== false
    - Sends/parses JSON automatically, or passes FormData through
    - On 401, attempts a single silent refresh-token retry before
-     giving up (skipped for the refresh/login/register calls
-     themselves to avoid loops)
+     giving up (skipped for the auth endpoints themselves)
    ---------------------------------------------------------- */
 let refreshInFlight = null;
 
@@ -55,11 +97,7 @@ async function refreshAccessToken() {
   if (!refreshToken) throw new ApiError('No refresh token available', 401);
 
   if (!refreshInFlight) {
-    refreshInFlight = fetch(`${BASE_URL}/auth/refresh-token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken }),
-    })
+    refreshInFlight = transport('POST', '/auth/refresh-token', { body: { refreshToken } })
       .then(async (res) => {
         if (!res.ok) throw new ApiError('Session expired', res.status);
         const data = await res.json().catch(() => ({}));
@@ -74,29 +112,11 @@ async function refreshAccessToken() {
 }
 
 export async function request(method, endpoint, { body, auth = true, isRetry = false } = {}) {
-  const url = `${BASE_URL}${endpoint}`;
-  const headers = {};
   const isFormData = body instanceof FormData;
+  const token = auth ? tokenStore.getAccessToken() : null;
 
-  if (!isFormData) headers['Content-Type'] = 'application/json';
+  const response = await transport(method, endpoint, { token, body, isFormData });
 
-  if (auth) {
-    const token = tokenStore.getAccessToken();
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  let response;
-  try {
-    response = await fetch(url, {
-      method,
-      headers,
-      body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
-    });
-  } catch (networkErr) {
-    throw new ApiError('Network error — could not reach Emaily API', 0, networkErr);
-  }
-
-  // Silent refresh-and-retry once on 401 for authenticated calls
   if (response.status === 401 && auth && !isRetry && !endpoint.startsWith('/auth/')) {
     try {
       await refreshAccessToken();
@@ -196,6 +216,7 @@ export const ServiceService = {
    INTEGRATIONS (Telegram bot, Google Sheets, etc.)
    ============================================================ */
 export const IntegrationService = {
+  list: (projectId) => get(`/projects/${projectId}/integrations`),
   create: (projectId, payload) => post(`/projects/${projectId}/integrations`, payload),
   remove: (integrationId) => del(`/integrations/${integrationId}`),
 };
@@ -228,8 +249,6 @@ export const SubmissionService = {
 
 /* ============================================================
    ADMIN
-   (Wired for completeness — no admin UI is built in this SPA;
-   these are ready to call from a separate admin surface.)
    ============================================================ */
 export const AdminService = {
   getDashboard: () => get('/admin/dashboard'),

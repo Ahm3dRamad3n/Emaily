@@ -570,3 +570,76 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   MPA additions: app shell, admin theme, project picker, tables
+   ============================================================ */
+
+#app-shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.5rem;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+@media (max-width: 768px) {
+  #app-shell { grid-template-columns: 1fr; }
+  #sidebar-root { order: 2; }
+}
+
+/* Admin surfaces get an amber/rose accent instead of purple/cyan,
+   so it's visually unmistakable which app you're in. */
+.admin-shell {
+  --aurora-purple: #f59e0b;
+  --aurora-cyan: #fb7185;
+  --aurora-gradient: linear-gradient(135deg, #f59e0b 0%, #fb7185 100%);
+  --aurora-gradient-soft: linear-gradient(135deg, rgba(245,158,11,.3) 0%, rgba(251,113,133,.3) 100%);
+}
+
+.admin-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Project picker dropdown used on Templates / History pages */
+select.input-glass {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff99' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.25rem;
+}
+
+/* Simple data table used across admin pages */
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.data-table th {
+  text-align: left;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+.data-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--glass-border);
+  vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover { background: var(--glass-surface); }
+
+.checkbox-glass {
+  width: 16px; height: 16px;
+  accent-color: var(--aurora-cyan);
+}

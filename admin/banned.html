@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Banned — Emaily Admin</title>
+<link rel="icon" href="../assets/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: { fontFamily: {
+    display: ['Sora', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+    body: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+    mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+  } } } };
+</script>
+<link rel="stylesheet" href="../style.css" />
+</head>
+<body class="font-body" data-page="admin-banned">
+
+<div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 items-end"></div>
+
+<header id="navbar-root" class="glass sticky top-0 z-50"></header>
+
+<div id="app-shell">
+  <aside id="sidebar-root" class="flex flex-col gap-1 h-fit sticky top-24"></aside>
+  <main id="page-content" class="min-w-0"></main>
+</div>
+
+<div id="modal-root" class="hidden fixed inset-0 z-[90]"></div>
+<script type="module" src="../app.js"></script>
+</body>
+</html>
