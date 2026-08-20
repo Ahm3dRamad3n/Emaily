@@ -18,14 +18,13 @@
   --aurora-gradient: linear-gradient(135deg, var(--aurora-purple) 0%, var(--aurora-cyan) 100%);
   --aurora-gradient-soft: linear-gradient(135deg, rgba(139,92,246,.35) 0%, rgba(34,211,238,.35) 100%);
 
-  /* ---- Color: glass surfaces ---- */
-  --glass-surface: rgba(255, 255, 255, 0.045);
-  --glass-surface-hover: rgba(255, 255, 255, 0.075);
-  --glass-border: rgba(255, 255, 255, 0.09);
+  /* ---- Color: surfaces (flat, no blur — see Performance note below) ---- */
+  --glass-surface: #14111f;
+  --glass-surface-hover: #191527;
+  --glass-surface-strong: #0d0b16;
+  --glass-border: rgba(255, 255, 255, 0.08);
   --glass-border-strong: rgba(255, 255, 255, 0.16);
-  --glass-highlight: rgba(255, 255, 255, 0.14);
-  --blur-glass: 20px;
-  --blur-glass-strong: 32px;
+  --glass-highlight: rgba(255, 255, 255, 0.10);
 
   /* ---- Color: text ---- */
   --text-primary: rgba(255, 255, 255, 0.94);
@@ -84,7 +83,14 @@ body {
   overflow-x: hidden;
 }
 
-/* Deep space + aurora glow backdrop, fixed behind all content */
+/* Deep space + aurora glow backdrop, fixed behind all content.
+   IMPORTANT: no background-attachment: fixed here — this element is
+   already position:fixed and covers the viewport, so attachment:fixed
+   is pure redundancy, and it's also a well-documented trigger that
+   forces browsers to repaint this background on the main thread on
+   every scroll frame instead of letting the compositor handle it.
+   That was the dominant remaining cause of scroll jank (it ran on
+   every page, unlike the old backdrop-filter which was per-card). */
 body::before {
   content: '';
   position: fixed;
@@ -95,7 +101,6 @@ body::before {
     radial-gradient(ellipse 55% 50% at 88% 92%, rgba(14, 165, 183, 0.28), transparent 60%),
     radial-gradient(ellipse 40% 35% at 85% 15%, rgba(34, 211, 238, 0.08), transparent 60%),
     linear-gradient(180deg, var(--bg-void) 0%, var(--bg-void-2) 55%, var(--bg-void-3) 100%);
-  background-attachment: fixed;
 }
 
 /* Faint starfield texture */
@@ -138,11 +143,20 @@ h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing
    Glass primitives
    ============================================================ */
 
+/* ============================================================
+   Performance note: this used to be real glassmorphism
+   (backdrop-filter: blur(...) on every card, the navbar, and the
+   sidebar). That's expensive — the browser has to re-sample and
+   blur everything behind each of those elements on every scroll
+   frame, which is exactly what caused the scroll jank. The
+   classes below keep the same names and the same visual language
+   (dark surface, soft border, faint glow) but are now flat
+   colors + box-shadow only, so they're effectively free to paint.
+   ============================================================ */
+
 .glass {
   background: var(--glass-surface);
   border: 1px solid var(--glass-border);
-  backdrop-filter: blur(var(--blur-glass));
-  -webkit-backdrop-filter: blur(var(--blur-glass));
   position: relative;
 }
 
@@ -164,19 +178,18 @@ h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing
 .glass-card {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-glass);
-  transition: border-color var(--transition-med), transform var(--transition-med), background var(--transition-med);
+  transition: border-color var(--transition-med), transform var(--transition-med), background var(--transition-med), box-shadow var(--transition-med);
 }
 
 .glass-card:hover {
   border-color: var(--glass-border-strong);
   background: var(--glass-surface-hover);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-glass), 0 0 24px rgba(139, 92, 246, 0.12);
 }
 
 .glass-strong {
-  backdrop-filter: blur(var(--blur-glass-strong));
-  -webkit-backdrop-filter: blur(var(--blur-glass-strong));
-  background: rgba(10, 8, 20, 0.65);
+  background: var(--glass-surface-strong);
 }
 
 /* ============================================================
@@ -324,11 +337,6 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
    Navbar
    ============================================================ */
 
-#navbar {
-  border-bottom: 1px solid var(--glass-border);
-  background: rgba(5, 3, 13, 0.55);
-}
-
 .nav-link {
   color: var(--text-secondary);
   font-size: 0.88rem;
@@ -391,21 +399,22 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
 
 .routing-dot {
   position: absolute;
-  top: 50%;
+  top: 0;
   left: 0;
   width: 10px; height: 10px;
   border-radius: 50%;
   background: var(--aurora-cyan);
   box-shadow: 0 0 12px 3px var(--aurora-cyan);
-  transform: translate(-50%, -50%);
   animation: routing-travel 2.8s var(--ease-out) infinite;
 }
 
+/* Animates transform, not left — animating left/top triggers layout
+   on every frame (real layout thrashing); transform is composited. */
 @keyframes routing-travel {
-  0%   { left: 0%;   opacity: 0; }
+  0%   { transform: translate(-5px, -4px); opacity: 0; }
   8%   { opacity: 1; }
   85%  { opacity: 1; }
-  100% { left: 100%; opacity: 0; }
+  100% { transform: translate(67px, -4px); opacity: 0; }
 }
 
 .aurora-glow-orb {
@@ -443,9 +452,8 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
   max-width: 360px;
   padding: 0.9rem 1.1rem;
   border-radius: var(--radius-md);
-  background: rgba(10, 8, 20, 0.9);
+  background: var(--glass-surface-strong);
   border: 1px solid var(--glass-border-strong);
-  backdrop-filter: blur(var(--blur-glass));
   box-shadow: var(--shadow-glass);
   display: flex;
   align-items: flex-start;
@@ -468,8 +476,7 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
    ============================================================ */
 
 #modal-root {
-  background: rgba(2, 1, 7, 0.7);
-  backdrop-filter: blur(6px);
+  background: rgba(3, 2, 8, 0.88);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -643,3 +650,110 @@ select.input-glass {
   width: 16px; height: 16px;
   accent-color: var(--aurora-cyan);
 }
+
+/* ============================================================
+   v2 additions: toggle switch, code snippets, copy buttons,
+   analytics chart primitives
+   ============================================================ */
+
+/* Pause/resume toggle switch — distinct from status pills, which
+   describe submission status (Sent/Failed/etc), not a control. */
+.toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 40px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-surface-strong);
+  border: 1px solid var(--glass-border-strong);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  flex-shrink: 0;
+}
+.toggle-switch .toggle-knob {
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+.toggle-switch.is-on {
+  background: rgba(139, 92, 246, 0.18);
+  border-color: var(--aurora-purple);
+}
+.toggle-switch.is-on .toggle-knob {
+  transform: translateX(18px);
+  background: var(--aurora-cyan);
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+}
+.toggle-switch.is-busy { opacity: 0.5; pointer-events: none; }
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+/* Copy-to-clipboard button next to API keys / snippets */
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: var(--glass-surface-hover);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+  flex-shrink: 0;
+}
+.copy-btn:hover { color: var(--text-primary); border-color: var(--glass-border-strong); }
+.copy-btn.is-copied { color: var(--success); border-color: rgba(52, 211, 153, 0.4); }
+
+.key-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* Code snippet modal tabs (reuses .tab-btn look, smaller) */
+.snippet-tabs { display: flex; gap: 0.25rem; margin-bottom: 0.75rem; }
+.snippet-tab {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+.snippet-tab:hover { color: var(--text-secondary); }
+.snippet-tab.is-active {
+  color: var(--text-primary);
+  background: var(--glass-surface-hover);
+  border-color: var(--glass-border);
+}
+
+/* Minimal SVG bar/line chart containers (vanilla — no chart library) */
+.chart-card { padding: 1.5rem; }
+.chart-bar { transition: opacity var(--transition-fast); }
+.chart-bar:hover { opacity: 0.75; }
+.chart-legend { display: flex; align-items: center; gap: 1.25rem; font-size: 0.75rem; color: var(--text-tertiary); }
+.chart-legend .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 0.4rem; }
+
+.stat-tile {
+  padding: 1.4rem;
+}
+.stat-tile .stat-value { font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; }
+.stat-tile .stat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); margin-bottom: 0.5rem; }
+.stat-tile .stat-delta { font-size: 0.75rem; margin-top: 0.35rem; }
+.stat-tile .stat-delta.is-good { color: var(--success); }
+.stat-tile .stat-delta.is-bad { color: var(--danger); }

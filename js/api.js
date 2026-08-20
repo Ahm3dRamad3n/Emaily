@@ -10,16 +10,19 @@ export const BASE_URL = 'http://localhost:5000/api';
 
 /* ============================================================
    MOCK BACKEND SWITCH
-   true  -> every request is served by mockDB.js (localStorage),
-            no network call is attempted at all.
-   false -> requests go to BASE_URL. If the real API is
-            unreachable (offline, not started yet, CORS error),
-            the wrapper automatically falls back to the mock so
-            you're never blocked while the C# backend is down.
+   true  -> every request is served by mockDB.js. mockDB.js is
+            loaded with a dynamic import() the first time it's
+            needed, so it never touches the network or the
+            runtime at all when this flag is false.
+   false -> every request goes to BASE_URL, full stop. There is
+            NO automatic fallback to mock data — if your C# API
+            is unreachable, the caller gets a normal network
+            ApiError, exactly like any production app talking to
+            a real backend. mockDB.js is never imported in this
+            mode; you could delete the file and nothing here
+            would break.
    ============================================================ */
 export const USE_MOCK = true;
-
-import { mockFetch } from './mockDB.js';
 
 const ACCESS_TOKEN_KEY = 'emaily_access_token';
 const REFRESH_TOKEN_KEY = 'emaily_refresh_token';
@@ -53,12 +56,14 @@ export class ApiError extends Error {
 }
 
 /* ----------------------------------------------------------
-   Transport: real fetch, with a mock fallback on network failure
+   Transport
    ---------------------------------------------------------- */
-let warnedFallback = false;
-
 async function transport(method, endpoint, { token, body, isFormData }) {
   if (USE_MOCK) {
+    // Dynamic import: mockDB.js is not fetched by the browser at
+    // all unless USE_MOCK is true. Isolation is structural, not
+    // just a runtime "if".
+    const { mockFetch } = await import('./mockDB.js');
     return mockFetch(method, endpoint, { token, body });
   }
 
@@ -74,21 +79,13 @@ async function transport(method, endpoint, { token, body, isFormData }) {
       body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
     });
   } catch (networkErr) {
-    if (!warnedFallback) {
-      console.warn('[Emaily] Backend unreachable at', BASE_URL, '— falling back to mock data for this session.');
-      warnedFallback = true;
-    }
-    return mockFetch(method, endpoint, { token, body });
+    // No mock fallback here on purpose — see USE_MOCK comment above.
+    throw new ApiError('Network error — could not reach the Emaily API', 0, networkErr);
   }
 }
 
 /* ----------------------------------------------------------
    Generic request wrapper
-   - Prepends BASE_URL (real mode) or routes to mockDB (mock mode)
-   - Attaches Authorization: Bearer <token> when auth !== false
-   - Sends/parses JSON automatically, or passes FormData through
-   - On 401, attempts a single silent refresh-token retry before
-     giving up (skipped for the auth endpoints themselves)
    ---------------------------------------------------------- */
 let refreshInFlight = null;
 
@@ -104,9 +101,7 @@ async function refreshAccessToken() {
         tokenStore.setTokens(data.accessToken, data.refreshToken);
         return data;
       })
-      .finally(() => {
-        refreshInFlight = null;
-      });
+      .finally(() => { refreshInFlight = null; });
   }
   return refreshInFlight;
 }
@@ -151,24 +146,16 @@ const del = (endpoint, opts) => request('DELETE', endpoint, opts);
    ============================================================ */
 export const AuthService = {
   register: (payload) => post('/auth/register', payload, { auth: false }),
-
   login: async (payload) => {
     const data = await post('/auth/login', payload, { auth: false });
     tokenStore.setTokens(data.accessToken, data.refreshToken);
     return data;
   },
-
   refreshToken: () => refreshAccessToken(),
-
   logout: async () => {
     const refreshToken = tokenStore.getRefreshToken();
-    try {
-      await post('/auth/logout', { refreshToken });
-    } finally {
-      tokenStore.clear();
-    }
+    try { await post('/auth/logout', { refreshToken }); } finally { tokenStore.clear(); }
   },
-
   forgotPassword: (email) => post('/auth/forgot-password', { email }, { auth: false }),
 };
 
@@ -178,6 +165,12 @@ export const AuthService = {
 export const UserService = {
   getMe: () => get('/user/me'),
   updateMe: (payload) => put('/user/me', payload),
+  // NEW — soft-deletes the caller's own account. See CHANGELOG.txt.
+  deleteMe: () => del('/user/me'),
+  // NEW — change password. See CHANGELOG.txt.
+  changePassword: (currentPassword, newPassword) => put('/user/password', { currentPassword, newPassword }),
+  // NEW — remaining email quota for the navbar badge. See CHANGELOG.txt.
+  getQuota: () => get('/user/quota'),
 };
 
 /* ============================================================
@@ -198,8 +191,10 @@ export const ProjectService = {
   create: (payload) => post('/projects', payload),
   getById: (id) => get(`/projects/${id}`),
   update: (id, payload) => put(`/projects/${id}`, payload),
+  // NEW — pause/resume toggle, separate from settings edit. See CHANGELOG.txt.
+  setStatus: (id, isActive) => put(`/projects/${id}/status`, { isActive }),
   regenerateKeys: (id) => post(`/projects/${id}/keys`),
-  remove: (id) => del(`/projects/${id}`),
+  remove: (id) => del(`/projects/${id}`), // soft delete (IsDeleted)
 };
 
 /* ============================================================
@@ -209,7 +204,8 @@ export const ServiceService = {
   list: (projectId) => get(`/projects/${projectId}/services`),
   create: (projectId, payload) => post(`/projects/${projectId}/services`, payload),
   update: (serviceId, payload) => put(`/services/${serviceId}`, payload),
-  remove: (serviceId) => del(`/services/${serviceId}`),
+  setStatus: (serviceId, isActive) => put(`/services/${serviceId}/status`, { isActive }),
+  remove: (serviceId) => del(`/services/${serviceId}`), // soft delete
 };
 
 /* ============================================================
@@ -222,14 +218,16 @@ export const IntegrationService = {
 };
 
 /* ============================================================
-   TEMPLATES
+   TEMPLATES — full field set (To/CC/BCC/ReplyTo/AppCheck/etc.)
    ============================================================ */
 export const TemplateService = {
   list: (projectId) => get(`/projects/${projectId}/templates`),
   create: (projectId, payload) => post(`/projects/${projectId}/templates`, payload),
   update: (templateId, payload) => put(`/templates/${templateId}`, payload),
-  remove: (templateId) => del(`/templates/${templateId}`),
+  setStatus: (templateId, isActive) => put(`/templates/${templateId}/status`, { isActive }),
+  remove: (templateId) => del(`/templates/${templateId}`), // soft delete
   addAttachment: (templateId, formData) => post(`/templates/${templateId}/attachments`, formData),
+  removeAttachment: (templateId, attachmentId) => del(`/templates/${templateId}/attachments/${attachmentId}`), // NEW
 };
 
 /* ============================================================
@@ -237,14 +235,18 @@ export const TemplateService = {
    ============================================================ */
 export const SubmissionService = {
   // Public endpoint — no auth header, called from the *client's* form, not this dashboard
-  submit: (publicApiKey, formData) =>
-    post(`/submit/${publicApiKey}`, formData, { auth: false }),
-
-  listByProject: (projectId, { page = 1, pageSize = 20 } = {}) =>
-    get(`/projects/${projectId}/submissions?page=${page}&pageSize=${pageSize}`),
-
+  submit: (publicApiKey, formData) => post(`/submit/${publicApiKey}`, formData, { auth: false }),
+  listByProject: (projectId, { page = 1, pageSize = 20 } = {}) => get(`/projects/${projectId}/submissions?page=${page}&pageSize=${pageSize}`),
   getById: (submissionId) => get(`/submissions/${submissionId}`),
   retry: (submissionId) => post(`/submissions/${submissionId}/retry`),
+};
+
+/* ============================================================
+   ANALYTICS — NEW, see CHANGELOG.txt
+   ============================================================ */
+export const AnalyticsService = {
+  getOverview: () => get('/analytics/overview'),
+  getProject: (projectId) => get(`/analytics/projects/${projectId}`),
 };
 
 /* ============================================================
@@ -252,11 +254,25 @@ export const SubmissionService = {
    ============================================================ */
 export const AdminService = {
   getDashboard: () => get('/admin/dashboard'),
+  getAnalytics: () => get('/admin/analytics'),
   listUsers: (query = '') => get(`/admin/users${query}`),
   setUserStatus: (userId, isActive) => put(`/admin/users/${userId}/status`, { isActive }),
-  setUserQuota: (userId, missingEmails) => put(`/admin/users/${userId}/quota`, { missingEmails }),
+  // NOTE: setUserQuota was removed — manual MissingEmails editing is no
+  // longer an admin action. See CHANGELOG.txt.
+  getUserProjects: (userId) => get(`/admin/users/${userId}/projects`), // NEW
   createOrUpdatePlan: (payload) => post('/admin/plans', payload),
   listBanned: () => get('/admin/banned'),
   addBanned: (payload) => post('/admin/banned', payload),
+  reduceBanned: (banId) => put(`/admin/banned/${encodeURIComponent(banId)}/reduce`), // NEW
   removeBanned: (banId) => del(`/admin/banned/${banId}`),
+  // NEW — system-wide browse endpoints. No param -> { count }; a size
+  // param -> { items } capped at 100. See CHANGELOG.txt.
+  listProjects: (pageSize) => get(`/admin/projects${pageSize ? `?p=${pageSize}` : ''}`),
+  listProjectTemplates: (projectId) => get(`/admin/projects/${projectId}/templates`),
+  listProjectServices: (projectId) => get(`/admin/projects/${projectId}/services`),
+  listTemplates: (pageSize) => get(`/admin/templates${pageSize ? `?t=${pageSize}` : ''}`),
+  getTemplate: (id) => get(`/admin/templates/${id}`),
+  listServices: (pageSize) => get(`/admin/services${pageSize ? `?s=${pageSize}` : ''}`),
+  getService: (id) => get(`/admin/services/${id}`),
+  listLogs: (pageSize) => get(`/admin/logs${pageSize ? `?l=${pageSize}` : ''}`),
 };
