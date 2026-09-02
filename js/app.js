@@ -241,7 +241,7 @@ function navbarInnerHTML(user, quota) {
       <div class="flex items-center gap-4">
         <a href="${urlFor(inAdmin ? "admin-dashboard" : "dashboard")}" class="flex items-center gap-3">
           <img src="${assetPath("logo.png")}" alt="Emaily" class="h-9 w-9 object-contain drop-shadow-[0_0_12px_rgba(139,92,246,0.55)]" />
-          <span class="font-display font-bold text-lg tracking-tight">Emaily</span>
+          <span class="font-display font-bold text-lg tracking-tight shimmer-text">Emaily</span>
           ${inAdmin ? '<span class="admin-tag">ADMIN</span>' : ""}
         </a>
         ${quota ? `<span class="badge-pill hidden md:inline-flex" title="Resets on the 1st of next month"><span class="dot"></span>Remaining: ${quota.remaining.toLocaleString()} / ${quota.limit.toLocaleString()}</span>` : ""}
@@ -1603,7 +1603,7 @@ function svgVolumeChart(volumeByDay, { height = 160 } = {}) {
       let y = chartH;
       let segs = "";
       y -= sentH;
-      segs += `<rect class="chart-bar" x="${x}" y="${y.toFixed(1)}" width="${barW}" height="${sentH.toFixed(1)}" style="fill:#22d3ee" rx="2"><title>${d.date}: ${d.sent} sent</title></rect>`;
+      segs += `<rect class="chart-bar" x="${x}" y="${y.toFixed(1)}" width="${barW}" height="${sentH.toFixed(1)}" style="fill:#34d399" rx="2"><title>${d.date}: ${d.sent} sent</title></rect>`;
       y -= failedH;
       if (failedH > 0.3)
         segs += `<rect class="chart-bar" x="${x}" y="${y.toFixed(1)}" width="${barW}" height="${failedH.toFixed(1)}" style="fill:#f87171" rx="2"><title>${d.date}: ${d.failed} failed</title></rect>`;
@@ -1611,7 +1611,7 @@ function svgVolumeChart(volumeByDay, { height = 160 } = {}) {
       if (pendingH > 0.3)
         segs += `<rect class="chart-bar" x="${x}" y="${y.toFixed(1)}" width="${barW}" height="${pendingH.toFixed(1)}" style="fill:#fbbf24" rx="2"><title>${d.date}: ${d.pending} pending</title></rect>`;
       if (i % labelEvery === 0) {
-        segs += `<text x="${x + barW / 2}" y="${height - 4}" font-size="9" style="fill:#ffffff61" text-anchor="middle">${escapeHtml(d.date.slice(5))}</text>`;
+        segs += `<text x="${x + barW / 2}" y="${height - 4}" font-size="9" style="fill:#64748b" text-anchor="middle">${escapeHtml(d.date.slice(5))}</text>`;
       }
       return segs;
     })
@@ -1635,7 +1635,7 @@ function progressBarRow(label, value, max, colorHex) {
 function chartLegendHTML() {
   return `
     <div class="chart-legend">
-      <span><span class="dot" style="background:#22d3ee"></span>Sent</span>
+      <span><span class="dot" style="background:#34d399"></span>Sent</span>
       <span><span class="dot" style="background:#f87171"></span>Failed</span>
       <span><span class="dot" style="background:#fbbf24"></span>Pending</span>
     </div>
@@ -1952,8 +1952,7 @@ async function initAdminAnalyticsPage() {
       <div class="grid md:grid-cols-2 gap-6">
         <div class="glass glass-card p-6">
           <h2 class="font-display font-semibold text-sm mb-4">Revenue by plan</h2>
-          ${data.revenueByPlan.map((p) => progressBarRow(`${p.planName} (${p.subscriberCount} subscriber${p.subscriberCount === 1 ? "" : "s"})`, p.mrr, maxRevenue, "#8b5cf6")).join("") || '<p class="text-tertiary text-sm">No active subscriptions yet.</p>'}
-        </div>
+          ${data.revenueByPlan.map((p) => progressBarRow(`${p.planName} (${p.subscriberCount} subscriber${p.subscriberCount === 1 ? "" : "s"})`, p.mrr, maxRevenue, "#fbbf24")).join("") || '<p class="text-tertiary text-sm">No active subscriptions yet.</p>'}        </div>
         <div class="glass glass-card p-6">
           <h2 class="font-display font-semibold text-sm mb-4">System health</h2>
           <div class="space-y-3 text-sm">

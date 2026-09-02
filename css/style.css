@@ -1,36 +1,44 @@
 /* ============================================================
-   EMAILY — "Aurora Glass" Design System
+   EMAILY — "Industrial Blueprint" Design System
    All theme values live in :root. Change the look of the entire
    app by editing the variables in this one block.
+
+   Design language: brutalist, technical, engineering-drawing.
+   Structural borders are dashed (architectural sketch lines);
+   active/state indicators (focus rings, active tabs, active nav)
+   stay solid so feedback doesn't get lost in the sketch-line
+   noise. Zero border-radius everywhere. Hard offset shadows
+   instead of soft blurred ones — buttons press INTO their shadow
+   on click, cards lift AWAY from their shadow on hover.
    ============================================================ */
 
 :root {
-  /* ---- Color: base ---- */
-  --bg-void: #05030d;
-  --bg-void-2: #0b0620;
-  --bg-void-3: #0a0817;
+  /* ---- Color: base (blueprint navy) ---- */
+  --bg-void: #0b1120;
+  --bg-void-2: #0b1120;
+  --bg-void-3: #0b1120;
 
-  /* ---- Color: aurora accents ---- */
-  --aurora-purple: #8b5cf6;
-  --aurora-purple-deep: #6d28d9;
-  --aurora-cyan: #22d3ee;
-  --aurora-teal-glow: #0ea5b7;
-  --aurora-gradient: linear-gradient(135deg, var(--aurora-purple) 0%, var(--aurora-cyan) 100%);
-  --aurora-gradient-soft: linear-gradient(135deg, rgba(139,92,246,.35) 0%, rgba(34,211,238,.35) 100%);
+  /* ---- Color: accents — amber/mustard primary, mint secondary ---- */
+  --aurora-purple: #fbbf24;
+  --aurora-purple-deep: #b45309;
+  --aurora-cyan: #34d399;
+  --aurora-teal-glow: #b45309;
+  --aurora-gradient: #fbbf24;
+  --aurora-gradient-soft: rgba(251, 191, 36, 0.12);
 
-  /* ---- Color: surfaces (flat, no blur — see Performance note below) ---- */
-  --glass-surface: #14111f;
-  --glass-surface-hover: #191527;
-  --glass-surface-strong: #0d0b16;
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-border-strong: rgba(255, 255, 255, 0.16);
-  --glass-highlight: rgba(255, 255, 255, 0.10);
+  /* ---- Color: surfaces (flat navy panels, dashed borders) ---- */
+  --glass-surface: #131c2f;
+  --glass-surface-hover: #182238;
+  --glass-surface-strong: #0e1526;
+  --glass-border: #334155;
+  --glass-border-strong: #475569;
+  --glass-highlight: rgba(255, 255, 255, 0.06);
 
   /* ---- Color: text ---- */
-  --text-primary: rgba(255, 255, 255, 0.94);
-  --text-secondary: rgba(255, 255, 255, 0.62);
-  --text-tertiary: rgba(255, 255, 255, 0.38);
-  --text-on-aurora: #ffffff;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --text-on-aurora: #0f172a;
 
   /* ---- Color: semantic ---- */
   --success: #34d399;
@@ -38,22 +46,22 @@
   --danger: #f87171;
   --danger-bg: rgba(248, 113, 113, 0.12);
   --warning: #fbbf24;
-  --warning-bg: rgba(251, 191, 36, 0.12);
+  --warning-bg: rgba(251, 191, 36, 0.14);
 
-  /* ---- Radius ---- */
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-pill: 999px;
+  /* ---- Radius: brutalist — zero, everywhere, no exceptions ---- */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-pill: 0px;
 
   /* ---- Spacing (custom, complements Tailwind) ---- */
   --space-card: 1.75rem;
   --space-section-y: 7rem;
 
-  /* ---- Shadow ---- */
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.45);
-  --shadow-glow-purple: 0 0 40px rgba(139, 92, 246, 0.25);
-  --shadow-glow-cyan: 0 0 40px rgba(34, 211, 238, 0.2);
+  /* ---- Shadow: hard offset, no blur ---- */
+  --shadow-glass: 4px 4px 0px rgba(0, 0, 0, 0.4);
+  --shadow-glow-purple: 4px 4px 0px rgba(251, 191, 36, 0.3);
+  --shadow-glow-cyan: 4px 4px 0px rgba(52, 211, 153, 0.25);
 
   /* ---- Motion ---- */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -61,18 +69,22 @@
   --transition-med: 280ms var(--ease-out);
 
   /* ---- Type ---- */
-  --font-display: 'Sora', ui-sans-serif, system-ui, sans-serif;
-  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 }
 
 /* ============================================================
    Base
    ============================================================ */
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   background-color: var(--bg-void);
@@ -83,51 +95,46 @@ body {
   overflow-x: hidden;
 }
 
-/* Deep space + aurora glow backdrop, fixed behind all content.
-   IMPORTANT: no background-attachment: fixed here — this element is
-   already position:fixed and covers the viewport, so attachment:fixed
-   is pure redundancy, and it's also a well-documented trigger that
-   forces browsers to repaint this background on the main thread on
-   every scroll frame instead of letting the compositor handle it.
-   That was the dominant remaining cause of scroll jank (it ran on
-   every page, unlike the old backdrop-filter which was per-card). */
+/* Blueprint grid backdrop, fixed behind all content. position:fixed
+   (not background-attachment:fixed) keeps this compositor-friendly —
+   see the scroll-performance note this project already fixed once. */
 body::before {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
   z-index: -2;
-  background:
-    radial-gradient(ellipse 60% 45% at 12% 8%, rgba(139, 92, 246, 0.22), transparent 60%),
-    radial-gradient(ellipse 55% 50% at 88% 92%, rgba(14, 165, 183, 0.28), transparent 60%),
-    radial-gradient(ellipse 40% 35% at 85% 15%, rgba(34, 211, 238, 0.08), transparent 60%),
-    linear-gradient(180deg, var(--bg-void) 0%, var(--bg-void-2) 55%, var(--bg-void-3) 100%);
-}
-
-/* Faint starfield texture */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  opacity: 0.5;
+  background-color: var(--bg-void);
   background-image:
-    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.5) 0, transparent 100%),
-    radial-gradient(1px 1px at 65% 12%, rgba(255,255,255,.4) 0, transparent 100%),
-    radial-gradient(1px 1px at 80% 70%, rgba(255,255,255,.35) 0, transparent 100%),
-    radial-gradient(1px 1px at 35% 82%, rgba(255,255,255,.3) 0, transparent 100%),
-    radial-gradient(1px 1px at 92% 40%, rgba(255,255,255,.4) 0, transparent 100%),
-    radial-gradient(1px 1px at 10% 65%, rgba(255,255,255,.3) 0, transparent 100%);
-  background-repeat: repeat;
-  background-size: 600px 600px;
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
-::selection { background: var(--aurora-purple); color: #fff; }
+/* No starfield in a blueprint — flat page beneath the grid. */
+body::after {
+  content: none;
+}
+
+::selection {
+  background: var(--aurora-purple);
+  color: var(--text-on-aurora);
+}
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--glass-border-strong); border-radius: var(--radius-pill); }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.28); }
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--glass-border-strong);
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--aurora-purple);
+}
 
 /* Keyboard focus visibility */
 :focus-visible {
@@ -136,38 +143,42 @@ body::after {
   border-radius: var(--radius-sm);
 }
 
-h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
-.font-mono { font-family: var(--font-mono); }
+h1,
+h2,
+h3,
+h4,
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+.font-mono {
+  font-family: var(--font-mono);
+}
 
 /* ============================================================
-   Glass primitives
-   ============================================================ */
-
-/* ============================================================
-   Performance note: this used to be real glassmorphism
-   (backdrop-filter: blur(...) on every card, the navbar, and the
-   sidebar). That's expensive — the browser has to re-sample and
-   blur everything behind each of those elements on every scroll
-   frame, which is exactly what caused the scroll jank. The
-   classes below keep the same names and the same visual language
-   (dark surface, soft border, faint glow) but are now flat
-   colors + box-shadow only, so they're effectively free to paint.
+   Glass primitives — kept the class names (glass/glass-panel/
+   glass-card/glass-strong) from the old design system since the
+   HTML/JS reference them, but they're now flat blueprint panels:
+   dashed border, hard offset shadow, no blur.
    ============================================================ */
 
 .glass {
   background: var(--glass-surface);
-  border: 1px solid var(--glass-border);
+  border: 1px dashed var(--glass-border);
   position: relative;
 }
 
 .glass::before {
-  /* subtle top inner highlight, like light catching the edge of glass */
-  content: '';
+  /* Corner registration mark, like a technical-drawing crop mark. */
+  content: "";
   position: absolute;
-  top: 0; left: 1px; right: 1px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
-  border-radius: inherit;
+  top: -1px;
+  left: -1px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--aurora-purple);
+  border-left: 2px solid var(--aurora-purple);
+  pointer-events: none;
 }
 
 .glass-panel {
@@ -178,14 +189,18 @@ h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing
 .glass-card {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-glass);
-  transition: border-color var(--transition-med), transform var(--transition-med), background var(--transition-med), box-shadow var(--transition-med);
+  transition:
+    border-color var(--transition-med),
+    transform var(--transition-med),
+    background var(--transition-med),
+    box-shadow var(--transition-med);
 }
 
 .glass-card:hover {
   border-color: var(--glass-border-strong);
   background: var(--glass-surface-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-glass), 0 0 24px rgba(139, 92, 246, 0.12);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.5);
 }
 
 .glass-strong {
@@ -193,7 +208,7 @@ h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing
 }
 
 /* ============================================================
-   Buttons
+   Buttons — hard shadow that compresses on press
    ============================================================ */
 
 .btn {
@@ -207,37 +222,62 @@ h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing
   justify-content: center;
   gap: 0.5rem;
   cursor: pointer;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast);
   border: 1px solid transparent;
   white-space: nowrap;
 }
 
-.btn:active { transform: scale(0.97); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+.btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: none !important;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
 .btn-aurora {
   background: var(--aurora-gradient);
   color: var(--text-on-aurora);
-  box-shadow: 0 4px 24px rgba(139, 92, 246, 0.35);
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.4);
 }
-.btn-aurora:hover { box-shadow: 0 6px 32px rgba(34, 211, 238, 0.45); transform: translateY(-1px); }
+.btn-aurora:hover {
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4);
+  transform: translate(2px, 2px);
+}
 
 .btn-ghost {
   background: var(--glass-surface);
-  border-color: var(--glass-border);
+  border: 1px dashed var(--glass-border);
   color: var(--text-primary);
 }
-.btn-ghost:hover { background: var(--glass-surface-hover); border-color: var(--glass-border-strong); }
+.btn-ghost:hover {
+  background: var(--glass-surface-hover);
+  border-color: var(--aurora-purple);
+}
 
 .btn-danger {
   background: var(--danger-bg);
-  border-color: rgba(248, 113, 113, 0.3);
+  border: 1px solid var(--danger);
   color: var(--danger);
 }
-.btn-danger:hover { background: rgba(248, 113, 113, 0.2); }
+.btn-danger:hover {
+  background: rgba(248, 113, 113, 0.2);
+}
 
-.btn-sm { padding: 0.45rem 0.9rem; font-size: 0.8rem; }
-.btn-icon { padding: 0.6rem; border-radius: var(--radius-sm); }
+.btn-sm {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.8rem;
+}
+.btn-icon {
+  padding: 0.6rem;
+  border-radius: var(--radius-sm);
+}
 
 /* ============================================================
    Badges / pills
@@ -250,7 +290,7 @@ h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing
   padding: 0.4rem 0.9rem;
   border-radius: var(--radius-pill);
   background: var(--glass-surface);
-  border: 1px solid var(--glass-border);
+  border: 1px dashed var(--glass-border);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -259,9 +299,10 @@ h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing
 }
 
 .badge-pill .dot {
-  width: 6px; height: 6px; border-radius: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
   background: var(--aurora-gradient);
-  box-shadow: 0 0 8px var(--aurora-cyan);
 }
 
 .status-pill {
@@ -273,10 +314,22 @@ h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing
   font-size: 0.72rem;
   font-weight: 600;
 }
-.status-pill.is-success { background: var(--success-bg); color: var(--success); }
-.status-pill.is-danger { background: var(--danger-bg); color: var(--danger); }
-.status-pill.is-warning { background: var(--warning-bg); color: var(--warning); }
-.status-pill.is-neutral { background: var(--glass-surface); color: var(--text-tertiary); }
+.status-pill.is-success {
+  background: var(--success-bg);
+  color: var(--success);
+}
+.status-pill.is-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+.status-pill.is-warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+.status-pill.is-neutral {
+  background: var(--glass-surface);
+  color: var(--text-tertiary);
+}
 
 /* ============================================================
    Text utilities
@@ -289,11 +342,16 @@ h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing
   color: transparent;
 }
 
-.text-secondary { color: var(--text-secondary); }
-.text-tertiary { color: var(--text-tertiary); }
+.text-secondary {
+  color: var(--text-secondary);
+}
+.text-tertiary {
+  color: var(--text-tertiary);
+}
 
 /* ============================================================
-   Forms
+   Forms — dashed by default, solid on focus (sketch line
+   becomes a committed line while you're actively editing)
    ============================================================ */
 
 .field-label {
@@ -306,26 +364,35 @@ h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing
 
 .input-glass {
   width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--glass-border);
+  background: var(--glass-surface-strong);
+  border: 1px dashed var(--glass-border);
   border-radius: var(--radius-sm);
   padding: 0.7rem 0.9rem;
   color: var(--text-primary);
   font-family: var(--font-body);
   font-size: 0.9rem;
-  transition: border-color var(--transition-fast), background var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
-.input-glass::placeholder { color: var(--text-tertiary); }
+.input-glass::placeholder {
+  color: var(--text-tertiary);
+}
 
 .input-glass:focus {
   outline: none;
+  border-style: solid;
   border-color: var(--aurora-cyan);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.12);
+  background: var(--glass-surface);
+  box-shadow: 2px 2px 0px rgba(52, 211, 153, 0.25);
 }
 
-textarea.input-glass { resize: vertical; min-height: 120px; }
+textarea.input-glass {
+  resize: vertical;
+  min-height: 120px;
+}
 
 .field-error {
   color: var(--danger);
@@ -343,7 +410,9 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
   font-weight: 500;
   transition: color var(--transition-fast);
 }
-.nav-link:hover { color: var(--text-primary); }
+.nav-link:hover {
+  color: var(--text-primary);
+}
 
 /* ============================================================
    Sidebar (dashboard)
@@ -358,16 +427,26 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
   color: var(--text-secondary);
   font-size: 0.88rem;
   font-weight: 500;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  border-left: 3px solid transparent;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
   cursor: pointer;
 }
-.sidebar-link:hover { background: var(--glass-surface); color: var(--text-primary); }
+.sidebar-link:hover {
+  background: var(--glass-surface);
+  color: var(--text-primary);
+}
 .sidebar-link.is-active {
   background: var(--glass-surface-hover);
   color: var(--text-primary);
-  border: 1px solid var(--glass-border);
+  border: 1px dashed var(--glass-border);
+  border-left: 3px solid var(--aurora-purple);
 }
-.sidebar-link.is-active .sidebar-icon { color: var(--aurora-cyan); }
+.sidebar-link.is-active .sidebar-icon {
+  color: var(--aurora-purple);
+}
 
 /* ============================================================
    Tabs (project detail)
@@ -379,20 +458,33 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
   font-weight: 600;
   color: var(--text-tertiary);
   border-bottom: 2px solid transparent;
-  transition: color var(--transition-fast), border-color var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast);
   cursor: pointer;
 }
-.tab-btn:hover { color: var(--text-secondary); }
-.tab-btn.is-active { color: var(--text-primary); border-color: var(--aurora-cyan); }
+.tab-btn:hover {
+  color: var(--text-secondary);
+}
+.tab-btn.is-active {
+  color: var(--text-primary);
+  border-color: var(--aurora-cyan);
+}
 
 /* ============================================================
-   Signature element: routing pulse
+   Signature element: routing pulse — restyled as a dimension
+   line from a technical drawing (dashed, with a solid marker
+   traveling along it) instead of a soft aurora glow line.
    ============================================================ */
 
 .routing-track {
   position: relative;
   height: 2px;
-  background: linear-gradient(90deg, rgba(139,92,246,.5), rgba(34,211,238,.5));
+  background: repeating-linear-gradient(
+    90deg,
+    var(--glass-border-strong) 0 6px,
+    transparent 6px 10px
+  );
   border-radius: 1px;
   overflow: visible;
 }
@@ -401,47 +493,72 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
   position: absolute;
   top: 0;
   left: 0;
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: var(--aurora-cyan);
-  box-shadow: 0 0 12px 3px var(--aurora-cyan);
+  width: 10px;
+  height: 10px;
+  background: var(--aurora-purple);
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4);
   animation: routing-travel 2.8s var(--ease-out) infinite;
 }
 
 /* Animates transform, not left — animating left/top triggers layout
    on every frame (real layout thrashing); transform is composited. */
 @keyframes routing-travel {
-  0%   { transform: translate(-5px, -4px); opacity: 0; }
-  8%   { opacity: 1; }
-  85%  { opacity: 1; }
-  100% { transform: translate(67px, -4px); opacity: 0; }
+  0% {
+    transform: translate(-5px, -4px);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(67px, -4px);
+    opacity: 0;
+  }
 }
 
+/* Blueprint has no business with soft blurred glow orbs — the
+   underlying elements use hardcoded Tailwind color utilities in
+   the HTML (bg-violet-600/30 etc.) that this stylesheet can't
+   safely retarget, and blur is the wrong texture for this aesthetic
+   regardless of color, so they're switched off entirely. */
 .aurora-glow-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  pointer-events: none;
-  animation: orb-drift 12s ease-in-out infinite alternate;
+  display: none;
 }
 
 @keyframes orb-drift {
-  0%   { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(20px, -14px) scale(1.08); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(20px, -14px) scale(1.08);
+  }
 }
 
 /* ============================================================
    View transitions
    ============================================================ */
 
-[data-view] { animation: view-in var(--transition-med); }
-
-@keyframes view-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+[data-view] {
+  animation: view-in var(--transition-med);
 }
 
-.hidden { display: none !important; }
+@keyframes view-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hidden {
+  display: none !important;
+}
 
 /* ============================================================
    Toasts
@@ -453,7 +570,7 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
   padding: 0.9rem 1.1rem;
   border-radius: var(--radius-md);
   background: var(--glass-surface-strong);
-  border: 1px solid var(--glass-border-strong);
+  border: 1px dashed var(--glass-border-strong);
   box-shadow: var(--shadow-glass);
   display: flex;
   align-items: flex-start;
@@ -462,13 +579,25 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
   animation: toast-in var(--transition-med);
 }
 
-.toast.is-success { border-left: 3px solid var(--success); }
-.toast.is-error { border-left: 3px solid var(--danger); }
-.toast.is-info { border-left: 3px solid var(--aurora-cyan); }
+.toast.is-success {
+  border-left: 3px solid var(--success);
+}
+.toast.is-error {
+  border-left: 3px solid var(--danger);
+}
+.toast.is-info {
+  border-left: 3px solid var(--aurora-cyan);
+}
 
 @keyframes toast-in {
-  from { opacity: 0; transform: translateX(24px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* ============================================================
@@ -476,7 +605,7 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
    ============================================================ */
 
 #modal-root {
-  background: rgba(3, 2, 8, 0.88);
+  background: rgba(11, 17, 32, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -488,13 +617,21 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
   max-width: 480px;
   max-height: 88vh;
   overflow-y: auto;
-  background: rgba(10, 8, 22, 0.92);
+  background: var(--glass-surface-strong);
+  border: 1px dashed var(--glass-border-strong);
+  box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.5);
   animation: modal-in var(--transition-med);
 }
 
 @keyframes modal-in {
-  from { opacity: 0; transform: scale(0.96) translateY(8px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 /* ============================================================
@@ -502,25 +639,39 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
    ============================================================ */
 
 .spinner {
-  width: 18px; height: 18px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.2);
-  border-top-color: var(--aurora-cyan);
+  border: 2px solid var(--glass-border);
+  border-top-color: var(--aurora-purple);
   animation: spin 0.7s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 .skeleton {
-  background: linear-gradient(90deg, var(--glass-surface) 25%, var(--glass-surface-hover) 50%, var(--glass-surface) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--glass-surface) 25%,
+    var(--glass-surface-hover) 50%,
+    var(--glass-surface) 75%
+  );
   background-size: 200% 100%;
   animation: skeleton-sweep 1.4s ease-in-out infinite;
   border-radius: var(--radius-sm);
 }
 
 @keyframes skeleton-sweep {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* ============================================================
@@ -531,23 +682,29 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
   font-family: var(--font-mono);
   font-size: 0.8rem;
   line-height: 1.6;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid var(--glass-border);
+  background: #060a15;
+  border: 1px dashed var(--glass-border);
   border-radius: var(--radius-md);
   padding: 1.1rem 1.25rem;
   overflow-x: auto;
-  color: rgba(226, 232, 255, 0.85);
+  color: var(--text-secondary);
 }
 
-.code-block .tok-key { color: #67e8f9; }
-.code-block .tok-str { color: #a78bfa; }
-.code-block .tok-punc { color: rgba(255,255,255,0.35); }
+.code-block .tok-key {
+  color: var(--aurora-cyan);
+}
+.code-block .tok-str {
+  color: var(--aurora-purple);
+}
+.code-block .tok-punc {
+  color: var(--text-tertiary);
+}
 
 .api-key-chip {
   font-family: var(--font-mono);
   font-size: 0.78rem;
-  background: rgba(0,0,0,0.35);
-  border: 1px solid var(--glass-border);
+  background: #060a15;
+  border: 1px dashed var(--glass-border);
   border-radius: var(--radius-sm);
   padding: 0.5rem 0.75rem;
   color: var(--text-secondary);
@@ -559,10 +716,18 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
    ============================================================ */
 
 @media (max-width: 768px) {
-  :root { --space-section-y: 4rem; }
-  #dashboard-shell { grid-template-columns: 1fr !important; }
-  #sidebar { display: none; }
-  #sidebar.is-open { display: flex; }
+  :root {
+    --space-section-y: 4rem;
+  }
+  #dashboard-shell {
+    grid-template-columns: 1fr !important;
+  }
+  #sidebar {
+    display: none;
+  }
+  #sidebar.is-open {
+    display: flex;
+  }
 }
 
 /* ============================================================
@@ -570,7 +735,9 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
    ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
@@ -592,17 +759,23 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
 }
 
 @media (max-width: 768px) {
-  #app-shell { grid-template-columns: 1fr; }
-  #sidebar-root { order: 2; }
+  #app-shell {
+    grid-template-columns: 1fr;
+  }
+  #sidebar-root {
+    order: 2;
+  }
 }
 
-/* Admin surfaces get an amber/rose accent instead of purple/cyan,
-   so it's visually unmistakable which app you're in. */
+/* Admin gets a rust-red/burnt-orange accent instead of the main
+   app's amber — industrial caution-signage red, so it's still
+   visually unmistakable which app you're in, without reaching for
+   purple/blue anywhere in the system. */
 .admin-shell {
-  --aurora-purple: #f59e0b;
-  --aurora-cyan: #fb7185;
-  --aurora-gradient: linear-gradient(135deg, #f59e0b 0%, #fb7185 100%);
-  --aurora-gradient-soft: linear-gradient(135deg, rgba(245,158,11,.3) 0%, rgba(251,113,133,.3) 100%);
+  --aurora-purple: #dc2626;
+  --aurora-cyan: #fb923c;
+  --aurora-gradient: #dc2626;
+  --aurora-gradient-soft: rgba(220, 38, 38, 0.14);
 }
 
 .admin-tag {
@@ -612,22 +785,26 @@ textarea.input-glass { resize: vertical; min-height: 120px; }
   letter-spacing: 0.1em;
   padding: 0.15rem 0.5rem;
   border-radius: var(--radius-sm);
-  background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: rgba(220, 38, 38, 0.14);
+  color: var(--aurora-purple);
+  border: 1px solid var(--aurora-purple);
 }
 
 /* Project picker dropdown used on Templates / History pages */
 select.input-glass {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff99' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   padding-right: 2.25rem;
 }
 
 /* Simple data table used across admin pages */
-.data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
 .data-table th {
   text-align: left;
   color: var(--text-tertiary);
@@ -636,19 +813,24 @@ select.input-glass {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 1px dashed var(--glass-border);
 }
 .data-table td {
   padding: 0.85rem 1rem;
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 1px dashed var(--glass-border);
   vertical-align: middle;
 }
-.data-table tr:last-child td { border-bottom: none; }
-.data-table tbody tr:hover { background: var(--glass-surface); }
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+.data-table tbody tr:hover {
+  background: var(--glass-surface);
+}
 
 .checkbox-glass {
-  width: 16px; height: 16px;
-  accent-color: var(--aurora-cyan);
+  width: 16px;
+  height: 16px;
+  accent-color: var(--aurora-purple);
 }
 
 /* ============================================================
@@ -666,29 +848,37 @@ select.input-glass {
   height: 22px;
   border-radius: var(--radius-pill);
   background: var(--glass-surface-strong);
-  border: 1px solid var(--glass-border-strong);
+  border: 1px dashed var(--glass-border-strong);
   cursor: pointer;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
   flex-shrink: 0;
 }
 .toggle-switch .toggle-knob {
   position: absolute;
-  top: 2px; left: 2px;
-  width: 16px; height: 16px;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: var(--text-tertiary);
-  transition: transform var(--transition-fast), background var(--transition-fast);
+  transition:
+    transform var(--transition-fast),
+    background var(--transition-fast);
 }
 .toggle-switch.is-on {
-  background: rgba(139, 92, 246, 0.18);
-  border-color: var(--aurora-purple);
+  background: rgba(251, 191, 36, 0.16);
+  border: 1px solid var(--aurora-purple);
 }
 .toggle-switch.is-on .toggle-knob {
   transform: translateX(18px);
   background: var(--aurora-cyan);
-  box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
 }
-.toggle-switch.is-busy { opacity: 0.5; pointer-events: none; }
+.toggle-switch.is-busy {
+  opacity: 0.5;
+  pointer-events: none;
+}
 
 .toggle-row {
   display: flex;
@@ -706,14 +896,23 @@ select.input-glass {
   padding: 0.3rem 0.6rem;
   border-radius: var(--radius-sm);
   background: var(--glass-surface-hover);
-  border: 1px solid var(--glass-border);
+  border: 1px dashed var(--glass-border);
   color: var(--text-secondary);
   cursor: pointer;
-  transition: color var(--transition-fast), border-color var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast);
   flex-shrink: 0;
 }
-.copy-btn:hover { color: var(--text-primary); border-color: var(--glass-border-strong); }
-.copy-btn.is-copied { color: var(--success); border-color: rgba(52, 211, 153, 0.4); }
+.copy-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--aurora-purple);
+}
+.copy-btn.is-copied {
+  color: var(--success);
+  border-color: var(--success);
+  border-style: solid;
+}
 
 .key-row {
   display: flex;
@@ -723,7 +922,11 @@ select.input-glass {
 }
 
 /* Code snippet modal tabs (reuses .tab-btn look, smaller) */
-.snippet-tabs { display: flex; gap: 0.25rem; margin-bottom: 0.75rem; }
+.snippet-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
 .snippet-tab {
   font-size: 0.78rem;
   font-weight: 600;
@@ -731,29 +934,105 @@ select.input-glass {
   border-radius: var(--radius-sm);
   color: var(--text-tertiary);
   background: transparent;
-  border: 1px solid transparent;
+  border: 1px dashed transparent;
   cursor: pointer;
-  transition: color var(--transition-fast), background var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast);
 }
-.snippet-tab:hover { color: var(--text-secondary); }
+.snippet-tab:hover {
+  color: var(--text-secondary);
+}
 .snippet-tab.is-active {
   color: var(--text-primary);
   background: var(--glass-surface-hover);
   border-color: var(--glass-border);
 }
 
-/* Minimal SVG bar/line chart containers (vanilla — no chart library) */
-.chart-card { padding: 1.5rem; }
-.chart-bar { transition: opacity var(--transition-fast); }
-.chart-bar:hover { opacity: 0.75; }
-.chart-legend { display: flex; align-items: center; gap: 1.25rem; font-size: 0.75rem; color: var(--text-tertiary); }
-.chart-legend .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 0.4rem; }
+/* Minimal SVG bar/line chart containers (vanilla — no chart library).
+   NOTE: the bar fill colors themselves are set inline in app.js as
+   literal hex, not via these CSS variables — see the note at the
+   top of this file. */
+.chart-card {
+  padding: 1.5rem;
+}
+.chart-bar {
+  transition: opacity var(--transition-fast);
+}
+.chart-bar:hover {
+  opacity: 0.75;
+}
+.chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+.chart-legend .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.4rem;
+}
 
 .stat-tile {
   padding: 1.4rem;
 }
-.stat-tile .stat-value { font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; }
-.stat-tile .stat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); margin-bottom: 0.5rem; }
-.stat-tile .stat-delta { font-size: 0.75rem; margin-top: 0.35rem; }
-.stat-tile .stat-delta.is-good { color: var(--success); }
-.stat-tile .stat-delta.is-bad { color: var(--danger); }
+.stat-tile .stat-value {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 700;
+}
+.stat-tile .stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  margin-bottom: 0.5rem;
+}
+.stat-tile .stat-delta {
+  font-size: 0.75rem;
+  margin-top: 0.35rem;
+}
+.stat-tile .stat-delta.is-good {
+  color: var(--success);
+}
+.stat-tile .stat-delta.is-bad {
+  color: var(--danger);
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    110deg,
+    #e2e8f0 0%,
+    #e2e8f0 40%,
+    #ffffff 46%,
+    #fbbf24 50%,
+    #ffffff 54%,
+    #e2e8f0 60%,
+    #e2e8f0 100%
+  );
+  background-size: 400% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: text-shine 6s ease-in-out infinite;
+}
+
+@keyframes text-shine {
+  0% {
+    background-position: 100% 0;
+  }
+
+  60% {
+    background-position: 0% 0;
+  }
+
+  100% {
+    background-position: 0% 0;
+  }
+}
