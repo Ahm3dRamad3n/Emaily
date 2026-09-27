@@ -1187,7 +1187,10 @@ function integrationCard(i) {
         ? JSON.parse(i.configJson)
         : i.configJson || {};
 
-    if (i.integrationType === "Telegram" || i.integrationType === "TELEGRAM") {
+    if (
+      i.integrationType === "TelegramBot" ||
+      i.integrationType === "TELEGRAMBOT"
+    ) {
       configDisplay = cfg.chatId || "—";
     } else if (
       i.integrationType === "GoogleSheets" ||
@@ -1819,7 +1822,7 @@ function integrationsListHTML(integrations) {
           </div>`
       : `<div class="glass glass-panel p-10 text-center">
             <p class="font-display font-semibold mb-2">No integrations yet</p>
-            <p class="text-secondary text-sm">Connect Telegram or Google Sheets to get notified of new submissions.</p>
+            <p class="text-secondary text-sm">Connect Telegram Bot or Google Sheets to get notified of new submissions.</p>
           </div>`
   }
   `;
@@ -1840,14 +1843,14 @@ function openIntegrationModal(projectId) {
             document.getElementById('config-group').style.display = (val === 'AiSummary') ? 'none' : 'block';
             
             // 2. التحكم في إظهار دليل الخطوات المناسب
-            document.getElementById('guide-telegram').style.display = (val === 'Telegram') ? 'block' : 'none';
+            document.getElementById('guide-telegram').style.display = (val === 'TelegramBot') ? 'block' : 'none';
             document.getElementById('guide-sheets').style.display = (val === 'GoogleSheets') ? 'block' : 'none';
             document.getElementById('guide-ai').style.display = (val === 'AiSummary') ? 'block' : 'none';
             
             // 3. تغيير اسم الحقل (Label) والـ Placeholder ديناميكياً
             const label = document.getElementById('config-label');
             const input = document.getElementById('int-config');
-            if(val === 'Telegram') {
+            if(val === 'TelegramBot') {
               label.innerText = 'Chat ID';
               input.placeholder = 'e.g. 123456789';
             } else if (val === 'GoogleSheets') {
@@ -1855,7 +1858,7 @@ function openIntegrationModal(projectId) {
               input.placeholder = 'https://docs.google.com/spreadsheets/d/...';
             }
           ">
-            <option value="Telegram">Telegram bot</option>
+            <option value="TelegramBot">Telegram bot</option>
             <option value="GoogleSheets">Google Sheets</option>
             <option value="AiSummary">AI Summary</option>
           </select>
@@ -1906,7 +1909,7 @@ async function submitIntegration(projectId) {
     const integration = await IntegrationService.create(projectId, {
       integrationType: $("#int-type").value,
       configJson:
-        $("#int-type").value === "Telegram"
+        $("#int-type").value === "TelegramBot"
           ? { chatId: $("#int-config").value.trim() }
           : $("#int-type").value === "GoogleSheets"
             ? { sheetUrl: $("#int-config").value.trim() }
@@ -1948,7 +1951,7 @@ function openEditIntegrationModal(
         : integration.configJson || {};
   } catch (e) {}
 
-  if (type.toUpperCase() === "TELEGRAM") {
+  if (type.toUpperCase() === "TELEGRAMBOT") {
     configVal = cfg.chatId || "";
   } else if (type.toUpperCase() === "GOOGLESHEETS") {
     configVal = cfg.sheetUrl || "";
@@ -1963,7 +1966,7 @@ function openEditIntegrationModal(
         <div>
           <label class="field-label">Type</label>
           <select class="input-glass opacity-70 cursor-not-allowed" id="int-type" disabled title="Integration type cannot be changed. Delete and create a new one instead.">
-            <option value="Telegram" ${type.toUpperCase() === "TELEGRAM" ? "selected" : ""}>Telegram bot</option>
+            <option value="TelegramBot" ${type.toUpperCase() === "TELEGRAMBOT" ? "selected" : ""}>Telegram bot</option>
             <option value="GoogleSheets" ${type.toUpperCase() === "GOOGLESHEETS" ? "selected" : ""}>Google Sheets</option>
             <option value="AiSummary" ${isAiSummary ? "selected" : ""}>AI Summary</option>
           </select>
@@ -1972,7 +1975,7 @@ function openEditIntegrationModal(
         <!-- حقل التعديل (يختفي إذا كان النوع AI Summary) -->
         <div id="config-group" style="display: ${isAiSummary ? "none" : "block"}">
           <label class="field-label" id="config-label">
-            ${type.toUpperCase() === "TELEGRAM" ? "Chat ID" : "Google Sheet URL"}
+            ${type.toUpperCase() === "TELEGRAMBOT" ? "Chat ID" : "Google Sheet URL"}
           </label>
           <input class="input-glass" id="int-config" value="${escapeHtml(configVal)}" placeholder="Update your config here..." />
         </div>
@@ -1999,7 +2002,7 @@ async function submitEditIntegration(integrationId, projectId, btnEl) {
   }
 
   let configJson = {};
-  if (type === "Telegram") {
+  if (type === "TelegramBot") {
     configJson = { chatId: configValue };
   } else if (type === "GoogleSheets") {
     configJson = { sheetUrl: configValue };
@@ -3056,9 +3059,9 @@ async function submitTemplateEditor(projectId, templateId, maxAttachments) {
     subject,
     contentHtml: html,
     toName: $("#tpl-to-name").value.trim(),
-    replyTo: $("#tpl-reply-to").value.trim(),
-    cc: $("#tpl-cc").value.trim(),
-    bcc: $("#tpl-bcc").value.trim(),
+    replyTo: $("#tpl-reply-to").value.trim() || null,
+    cc: $("#tpl-cc").value.trim() || null,
+    bcc: $("#tpl-bcc").value.trim() || null,
 
     enableRecaptchaV2: recaptcha,
     recaptchaSecretKey: recaptcha
@@ -5241,7 +5244,7 @@ function planFormFields(p = {}) {
     <div class="flex items-center gap-6 mt-5">
       <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="checkbox-glass" id="plan-sheets" ${p.canUseGoogleSheets ? "checked" : ""}/> Google Sheets</label>
       <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="checkbox-glass" id="plan-ai" ${p.canUseAI ? "checked" : ""}/> AI summaries</label>
-      <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="checkbox-glass" id="plan-telegram" ${p.canUseTelegramBot ? "checked" : ""}/> Telegram</label>
+      <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="checkbox-glass" id="plan-telegram" ${p.canUseTelegramBot ? "checked" : ""}/> Telegram Bot</label>
     </div>
   `;
 }

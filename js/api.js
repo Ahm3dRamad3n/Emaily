@@ -2,7 +2,9 @@
    EMAILY — api.js
    Central API configuration + generic fetch wrapper + services.
    ============================================================ */
-export const BASE_URL = "https://localhost:7104/api";
+//export const BASE_URL = "https://localhost:7104/api";
+export const BASE_URL =
+  "https://emaily-gec9hbg5hng6a3dx.switzerlandnorth-01.azurewebsites.net/api";
 
 const ACCESS_TOKEN_KEY = "emaily_access_token";
 const REFRESH_TOKEN_KEY = "emaily_refresh_token";
