@@ -1036,3 +1036,73 @@ select.input-glass {
     background-position: 0% 0;
   }
 }
+
+/* الحاوية الأساسية للكارت يجب أن تكون relative لضبط مكان الزر */
+.with-unlock-badge {
+  position: relative;
+}
+
+/* تصميم زر القفل المائل بالـ Brutalist Style */
+.unlock-badge-btn {
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  background-color: var(--aurora-purple); /* اللون الأصفر/الذهبي الخاص بك */
+  color: var(--text-on-aurora); /* اللون الكحلي الداكن للنص */
+  border: 2px solid var(--text-on-aurora); /* إطار صلب */
+  padding: 8px;
+  border-radius: var(--radius-sm); /* 0px Brutalist */
+  box-shadow: 4px 4px 0px var(--text-on-aurora); /* ظل صلب خشن */
+  transform: rotate(-6deg);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  overflow: hidden;
+  font-family: var(--font-display);
+}
+
+/* حركة الكارت عند مرور الماوس (يتعدل ويرتفع) */
+.unlock-badge-btn:hover {
+  transform: rotate(0deg) translate(-4px, -4px);
+  box-shadow: 6px 6px 0px var(--text-on-aurora);
+  background-color: var(--warning);
+}
+
+/* التحكم في الأيقونات */
+.unlock-icon-closed {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+.unlock-icon-open {
+  display: none;
+  width: 20px;
+  height: 20px;
+}
+.unlock-badge-btn:hover .unlock-icon-closed {
+  display: none;
+}
+.unlock-badge-btn:hover .unlock-icon-open {
+  display: block;
+}
+
+/* التحكم في النص (يتمدد بانسيابية) */
+.unlock-text {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  max-width: 0;
+  opacity: 0;
+  margin-left: 0;
+  transition: all var(--transition-med); /* استخدام متغيرك للحركة */
+}
+
+.unlock-badge-btn:hover .unlock-text {
+  max-width: 100px;
+  opacity: 1;
+  margin-left: 8px;
+}

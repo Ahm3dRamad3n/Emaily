@@ -60,41 +60,7 @@
           <h1 class="font-display text-xl font-bold mb-1">Sign in</h1>
           <p class="text-secondary text-sm mb-6">Welcome back to Emaily.</p>
 
-          <form id="form-login" class="space-y-4">
-            <div>
-              <label class="field-label" for="login-email">Email</label>
-              <input
-                class="input-glass"
-                type="email"
-                id="login-email"
-                name="email"
-                placeholder="you&#64;example.com"
-                required
-              />
-            </div>
-            <div>
-              <label class="field-label" for="login-password">Password</label>
-              <input
-                class="input-glass"
-                type="password"
-                id="login-password"
-                name="password"
-                placeholder="••••••••"
-                required
-              />
-            </div>
-            <p class="field-error hidden" data-error-for="login"></p>
-            <button type="submit" class="btn btn-aurora w-full justify-center">
-              Sign in
-            </button>
-            <button
-              type="button"
-              class="text-xs text-tertiary hover:text-secondary transition-colors block mx-auto"
-              data-action="forgot-password"
-            >
-              Forgot your password?
-            </button>
-          </form>
+          <form id="form-login" class="space-y-4"></form>
 
           <p class="text-secondary text-sm text-center mt-6">
             New to Emaily?
@@ -105,6 +71,8 @@
         </div>
       </div>
     </main>
+
+    <footer id="dynamic-footer" class="mt-auto w-full"></footer>
 
     <div id="modal-root" class="hidden fixed inset-0 z-[90]"></div>
     <script type="module" src="../js/app.js"></script>
