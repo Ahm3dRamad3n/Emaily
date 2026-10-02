@@ -405,7 +405,7 @@ function getDashboardNavbarHTML(user) {
       </div>
       <div class="flex items-center gap-3">
         ${!inAdmin && isAdminRole(user) ? `<a href="${urlFor("admin-dashboard")}" class="btn btn-ghost btn-sm">Admin panel</a>` : ""}
-        <span class="hidden sm:inline text-sm text-secondary font-mono">${escapeHtml(user.email)}</span>
+        <span class="hidden sm:!inline text-sm text-secondary font-mono">${escapeHtml(user.email)}</span>
         <button class="btn btn-icon btn-ghost" data-action="logout" title="Log out" aria-label="Log out">${ICONS.logout}</button>
       </div>
     </div>
@@ -4636,6 +4636,7 @@ async function initAdminDashboardPage() {
   content.innerHTML = renderSkeleton();
   try {
     const stats = await AdminService.getDashboard();
+    const hangfireUrl = BASE_URL.replace(/\/api\/?$/, "/hangfire");
     const cards = [
       ["Total users", stats.totalUsers],
       ["Active users", stats.activeUsers],
@@ -4645,10 +4646,30 @@ async function initAdminDashboardPage() {
       ["Failed submissions", stats.failedSubmissions],
     ];
     content.innerHTML = `
+  <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
+    <div>
       <h1 class="font-display text-2xl font-bold mb-1">Admin overview</h1>
-      <p class="text-secondary text-sm mb-8">System-wide stats across all Emaily accounts.</p>
-      <div class="grid sm:grid-cols-3 gap-5">${cards.map(([label, val]) => `<div class="glass glass-card p-6"><p class="text-tertiary text-xs uppercase tracking-wide mb-2">${label}</p><p class="font-display text-3xl font-bold">${val}</p></div>`).join("")}</div>
-    `;
+      <p class="text-secondary text-sm">System-wide stats across all Emaily accounts.</p>
+    </div>
+    <a href="${hangfireUrl}" target="_blank" class="glass px-4 py-2 text-sm font-bold flex items-center gap-2 hover:bg-white hover:text-black transition-colors">
+      Hangfire Dashboard
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+    </a>
+  </div>
+
+  <div class="grid sm:grid-cols-3 gap-5">
+    ${cards
+      .map(
+        ([label, val]) => `
+      <div class="glass glass-panel p-6">
+        <p class="text-tertiary text-xs uppercase tracking-wide mb-2">${label}</p>
+        <p class="font-display text-3xl font-bold">${val}</p>
+      </div>
+    `,
+      )
+      .join("")}
+  </div>
+`;
   } catch (err) {
     content.innerHTML = errorPanel(err);
   }
