@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy — Emaily</title>
+    <meta name="description" content="Emaily's privacy policy: what data is collected, how it's used, and your rights as a user." />
+    <link rel="icon" href="../assets/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["Sora", "ui-sans-serif", "system-ui", "sans-serif"],
+              body: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+              mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="font-body min-h-screen flex flex-col" data-page="privacy">
+    <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 items-end"></div>
+
+    <header class="glass sticky top-0 z-50" id="navbar-root"></header>
+
+    <main class="flex-1">
+      <section class="max-w-3xl mx-auto px-6 py-16">
+        <nav class="text-tertiary text-xs mb-6" aria-label="Breadcrumb">
+          <a href="../index.html" style="color: var(--text-tertiary)">Emaily</a>
+          <span class="mx-2">/</span>
+          <span style="color: var(--text-secondary)">Privacy Policy</span>
+        </nav>
+
+        <h1 class="font-display text-3xl md:text-4xl font-extrabold tracking-tight mb-3">Privacy Policy</h1>
+        <p class="text-tertiary text-sm mb-8">Last updated: the date this policy is published.</p>
+
+        <div class="glass glass-card p-5 mb-10" style="border-color: var(--danger); border-style: solid;">
+          <p class="text-sm leading-relaxed" style="color: var(--danger)">
+            <strong>This is not legal advice.</strong> Emaily is a student
+            project built as part of coursework in a College of Computers
+            and Information, to practice building a real, production-style
+            system — it is not operated by a registered company or business
+            entity. This document is boilerplate written to be clear and
+            honest about what the project actually does, and should be
+            reviewed by a qualified legal professional before this project
+            is used to handle real users' data in production.
+          </p>
+        </div>
+
+        <div class="prose-sections space-y-10 text-secondary leading-relaxed text-sm">
+          <div>
+            <h2 class="font-display text-xl font-bold text-primary mb-3" style="color: var(--text-primary)">1. Who this policy covers</h2>
+            <p>
+              This policy covers the Emaily project (referred to here as
+              "Emaily," "this project," or "we") — a form-to-email routing
+              service built and maintained by its developer as an
+              educational project. There is no company behind it.
+            </p>
+          </div>
+
+          <div>
+            <h2 class="font-display text-xl font-bold mb-3" style="color: var(--text-primary)">2. Information we collect</h2>
+            <p class="mb-3"><strong>Account information.</strong> Your email address and a hashed (never plain-text) password when you register.</p>
+            <p class="mb-3"><strong>Connected service credentials.</strong> If you connect Gmail or Microsoft, we store the OAuth tokens needed to send on your behalf, encrypted at rest. If you connect SendGrid, Resend, or SMTP, we store that API key or password, also encrypted at rest. In every case, only send permission is requested — never the ability to read your mailbox.</p>
+            <p class="mb-3"><strong>Submission data.</strong> When a form submits through your project, the field values and the rendered email are stored as a history entry so you can review and retry it later — unless the template that handled it has "Save to history" turned off, in which case none of that submission's content is stored at all.</p>
+            <p><strong>Usage data.</strong> Standard web analytics (see Cookies &amp; Analytics below).</p>
+          </div>
+
+          <div>
+            <h2 class="font-display text-xl font-bold mb-3" style="color: var(--text-primary)">3. How your information is used</h2>
+            <p>
+              Your information is used only to operate the service you've
+              configured: authenticating you, sending email through the
+              service you connected, recording submission history so you
+              can see what happened, and enforcing the limits of your plan.
+              It is not sold, and it is not used for advertising.
+            </p>
+          </div>
+
+          <div>
+            <h2 class="font-display text-xl font-bold mb-3" style="color: var(--text-primary)">4. Third parties this project sends data through</h2>
+            <p class="mb-3">
+              Emaily's entire purpose is routing email through an account
+              you connect, so by design, submission content passes through
+              whichever of these you've chosen to use:
+            </p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>Gmail (Google) — if you connect a Gmail account.</li>
+              <li>Microsoft Outlook / Microsoft 365 — if you connect a Microsoft account.</li>
+              <li>SendGrid or Resend — if you connect one of these by API key.</li>
+              <li>Your own SMTP provider — if you connect one with an app password.</li>
+              <li>Telegram — only if you enable Telegram alerts on a project.</li>
+              <li>Google Sheets — only if you enable Sheets logging on a project.</li>
+              <li>An AI provider — only to generate the optional summary of a delivered email.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 class="font-display text-xl font-bold mb-3" style="color: var(--text-primary)">5. Cookies &amp; analytics</h2>
+            <p>
+              This site uses Google Analytics to understand how it's used —
+              which pages are visited and roughly how. Google Analytics sets
+              cookies in your browser to do this. You can opt out using your
+              browser's cookie settings or a browser extension such as
+              Google's Analytics opt-out add-on. No other tracking or
+              advertising cookies are used.
+            </p>
+          </div>
+
+          <div>
+            <h2 class="font-display text-xl font-bold mb-3" style="color: var(--text-primary)">6. Data retention</h2>
+            <p>
+              Account data and submission history are kept for as long as
+              your account exists. Deleting your account soft-deletes your
+              data and revokes all of your refresh tokens; submissions from
+              templates with history-saving turned off were never stored in
+              the first place, so there's nothing additional to delete there.
+            </p>
+          </div>
+
+          <div>
+            <h2 class="font-display text-xl font-bold mb-3" style="color: var(--text-primary)">7. Your rights</h2>
+            <p>
+              You can review, export (via the API), or delete your own data
+              at any time from your account settings. You can disconnect any
+              connected service, which removes its stored credentials. If
+              you'd like something handled that isn't available directly in
+              the dashboard, reach out through the
+              <a href="support.html" class="text-gradient-aurora font-semibold">support page</a>.
+            </p>
+          </div>
+
+          <div>
+            <h2 class="font-display text-xl font-bold mb-3" style="color: var(--text-primary)">8. Security measures</h2>
+            <p>
+              Connected-service credentials are encrypted at rest with
+              AES-256-GCM. Passwords are hashed, never stored in plain text.
+              Sessions use short-lived, purpose-scoped JWTs with rotating
+              refresh tokens and immediate logout revocation. More detail is
+              on the <a href="features.html#security" class="text-gradient-aurora font-semibold">Features</a> page.
+            </p>
+          </div>
+
+          <div>
+            <h2 class="font-display text-xl font-bold mb-3" style="color: var(--text-primary)">9. Children's privacy</h2>
+            <p>
+              Emaily is not directed at children, and knowingly collecting
+              information from children is not intended. If you believe a
+              child has provided personal information, contact us through
+              the support page and it will be removed.
+            </p>
+          </div>
+
+          <div>
+            <h2 class="font-display text-xl font-bold mb-3" style="color: var(--text-primary)">10. Governing jurisdiction</h2>
+            <p>
+              Because this project is not operated by a registered business,
+              no specific governing jurisdiction is designated for this
+              policy.
+            </p>
+          </div>
+
+          <div>
+            <h2 class="font-display text-xl font-bold mb-3" style="color: var(--text-primary)">11. Changes to this policy</h2>
+            <p>
+              This policy may change as the project develops. Meaningful
+              changes will be reflected here with an updated "last updated"
+              note at the top of the page.
+            </p>
+          </div>
+
+          <div>
+            <h2 class="font-display text-xl font-bold mb-3" style="color: var(--text-primary)">12. Contact</h2>
+            <p>
+              Questions about this policy or your data can be sent through
+              the <a href="support.html" class="text-gradient-aurora font-semibold">support page</a>.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="dynamic-footer" class="mt-auto w-full"></footer>
+
+    <div id="modal-root" class="hidden fixed inset-0 z-[90]"></div>
+    <script type="module" src="../js/app.js"></script>
+  </body>
+</html>

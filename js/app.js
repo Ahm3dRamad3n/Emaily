@@ -21,9 +21,9 @@ import {
   SubmissionService,
   AnalyticsService,
   AdminService,
-  BASE_URL,
   tokenStore,
 } from "./api.js";
+import { BASE_URL } from "./env.js";
 
 let currentSubscriptionData = null;
 /* ============================================================
@@ -31,10 +31,18 @@ let currentSubscriptionData = null;
    link and asset path has to account for that.
    ============================================================ */
 const inAdmin = location.pathname.includes("/admin/");
-const isSrc = location.pathname.includes("/src/");
+const path = window.location.pathname;
+const isLanding = path === "/" || path === "/index.html" || path === "/index";
 
 const PAGE_URLS = {
   landing: "index.html",
+  support: "app/support.html",
+  terms: "app/terms.html",
+  privacy: "app/privacy.html",
+  pricing: "app/pricing.html",
+  features: "app/features.html",
+  docs: "app/docs.html",
+  "api-reference": "app/api-reference.html",
   login: "src/login.html",
   register: "src/register.html",
   dashboard: "src/dashboard.html",
@@ -60,18 +68,12 @@ const PAGE_URLS = {
 function urlFor(pageKey, query = "") {
   const path = PAGE_URLS[pageKey];
   if (!path) return "#";
-  const resolved = inAdmin
-    ? path.startsWith("admin/")
-      ? path.slice("admin/".length)
-      : "../" + path
-    : isSrc
-      ? "../" + path
-      : path;
+  const resolved = isLanding ? path : "../" + path;
   return resolved + query;
 }
 
 function assetPath(name) {
-  return (inAdmin || isSrc ? "../assets/" : "assets/") + name;
+  return (isLanding ? "assets/" : "../assets/") + name;
 }
 
 function redirectTo(pageKey, query = "") {
@@ -268,8 +270,87 @@ const ICONS = {
 /* ============================================================
    Layout: navbar + sidebar
    ============================================================ */
+function getPublicNavbarHTML() {
+  return `
+      <div
+        class="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between"
+      >
+        <a href="${urlFor("dashboard")}" class="flex items-center gap-3">
+          <img
+            src="${assetPath("logo.png")}"
+            alt="Emaily"
+            class="h-9 w-9 object-contain shimmer-text drop-shadow-[0_0_12px_rgba(251,191,36,0.55)]"
+          />
+          <span
+            class="font-display font-bold text-lg tracking-tight shimmer-text"
+            >Emaily</span
+          >
+        </a>
 
-function navbarInnerHTML(user) {
+        <nav class="hidden md:!flex items-center gap-8" aria-label="Primary">
+          <a href="${urlFor("landing", "#features")}" class="nav-link">Features</a>
+          <a href="${urlFor("landing", "#how-it-works")}" class="nav-link">How it works</a>
+          <a href="${urlFor("landing", "#security")}" class="nav-link">Security</a>
+          <a href="${urlFor("docs")}" class="nav-link">Docs</a>
+          <a href="${urlFor("pricing")}" class="nav-link">Pricing</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <a
+            href="${urlFor("login")}"
+            class="btn btn-ghost btn-sm hidden sm:inline-flex"
+            >Sign in</a
+          >
+          <a href="${urlFor("register")}" class="btn btn-aurora btn-sm"
+            >Get your API key</a
+          >
+          <button
+            id="mobile-menu-toggle"
+            data-action="toggle-toc"
+            data-target="mobile-menu"
+            type="button"
+            class="btn btn-icon btn-ghost md:hidden"
+            aria-label="Open navigation menu"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="mobile-menu"
+        data-action="close-toc"
+        data-target="mobile-menu-toggle"
+        class="hidden md:hidden border-t"
+        style="border-color: var(--glass-border)"
+      >
+        <nav class="flex flex-col gap-1 p-4" aria-label="Mobile">
+          <a href="${urlFor("landing", "#features")}" class="nav-link py-2">Features</a>
+          <a href="${urlFor("landing", "#how-it-works")}" class="nav-link py-2"
+            >How it works</a
+          >
+          <a href="${urlFor("landing", "#security")}" class="nav-link py-2">Security</a>
+          <a href="${urlFor("docs")}" class="nav-link py-2">Docs</a>
+          <a href="${urlFor("pricing")}" class="nav-link py-2">Pricing</a>
+          <a href="${urlFor("login")}" class="nav-link py-2">Sign in</a>
+        </nav>
+      </div>`;
+}
+
+function getDashboardNavbarHTML(user) {
   // فحص هل المستخدم قام بإغلاق الشريط في هذه الجلسة أم لا
   const isBetaBannerHidden =
     sessionStorage.getItem("hideBetaBanner") === "true";
@@ -329,6 +410,17 @@ function navbarInnerHTML(user) {
       </div>
     </div>
   `;
+}
+
+function renderNavbar(user) {
+  const navbarRoot = $("#navbar-root");
+  if (!navbarRoot) return;
+
+  if (user) {
+    navbarRoot.innerHTML = getDashboardNavbarHTML(user);
+  } else {
+    navbarRoot.innerHTML = getPublicNavbarHTML();
+  }
 }
 
 function sidebarInnerHTML(activePage) {
@@ -400,8 +492,8 @@ function getPublicFooterHTML() {
           <div>
             <h4 class="font-display font-semibold mb-4 text-white">Product</h4>
             <ul class="space-y-2 text-sm text-secondary">
-              <li><a href="/features.html" class="hover:text-aurora transition">Features</a></li>
-              <li><a href="/pricing.html" class="hover:text-aurora transition">Pricing</a></li>
+              <li><a href="${urlFor("features")}" class="hover:text-aurora transition">Features</a></li>
+              <li><a href="${urlFor("pricing")}" class="hover:text-aurora transition">Pricing</a></li>
             </ul>
           </div>
           
@@ -409,8 +501,8 @@ function getPublicFooterHTML() {
           <div>
             <h4 class="font-display font-semibold mb-4 text-white">Resources</h4>
             <ul class="space-y-2 text-sm text-secondary">
-              <li><a href="/docs.html" class="hover:text-aurora transition">Documentation</a></li>
-              <li><a href="/api-reference.html" class="hover:text-aurora transition">API Reference</a></li>
+              <li><a href="${urlFor("docs")}" class="hover:text-aurora transition">Documentation</a></li>
+              <li><a href="${urlFor("api-reference")}" class="hover:text-aurora transition">API Reference</a></li>
             </ul>
           </div>
           
@@ -418,8 +510,8 @@ function getPublicFooterHTML() {
           <div>
             <h4 class="font-display font-semibold mb-4 text-white">Legal</h4>
             <ul class="space-y-2 text-sm text-secondary">
-              <li><a href="/privacy.html" class="hover:text-aurora transition">Privacy Policy</a></li>
-              <li><a href="/terms.html" class="hover:text-aurora transition">Terms of Service</a></li>
+              <li><a href="${urlFor("privacy")}" class="hover:text-aurora transition">Privacy Policy</a></li>
+              <li><a href="${urlFor("terms")}" class="hover:text-aurora transition">Terms of Service</a></li>
             </ul>
           </div>
         </div>
@@ -430,9 +522,8 @@ function getPublicFooterHTML() {
             © 2026 Emaily. All rights reserved.
           </p>
           <p class="text-tertiary text-xs text-center md:text-right">
-            Developed by 
-            <!-- ضع رابط موقع البورتفوليو الخاص بك المرفوع على GitHub Pages هنا -->
-            <a href="#" target="_blank" rel="noopener noreferrer" class="text-secondary hover:text-aurora font-semibold transition">
+            Designed and Developed by 
+            <a href="https://ahm3dramad3n.github.io/portfolio/en/" target="_blank" rel="noopener noreferrer" class="text-secondary hover:text-aurora font-semibold transition">
               Ahmed Ramadan
             </a>
           </p>
@@ -460,13 +551,12 @@ function getDashboardFooterHTML() {
 
       <!-- Quick Links & Portfolio -->
       <div class="flex items-center gap-3 text-xs text-tertiary">
-        <a href="/support" class="hover:text-white transition">Support</a>
+        <a href="${urlFor("support")}" class="hover:text-white transition">Support</a>
         <span>&middot;</span>
-        <a href="/docs" class="hover:text-white transition">Docs</a>
+        <a href="${urlFor("docs")}" class="hover:text-white transition">Docs</a>
         <span>&middot;</span>
         <span>Made by 
-          <!-- استبدل رابط # برابط البورتفوليو الخاص بك على GitHub Pages -->
-          <a href="#" target="_blank" rel="noopener noreferrer" class="text-secondary hover:text-aurora font-semibold transition">
+          <a href="https://ahm3dramad3n.github.io/portfolio/en/" target="_blank" rel="noopener noreferrer" class="text-secondary hover:text-aurora font-semibold transition">
             Ahmed Ramadan
           </a>
         </span>
@@ -517,9 +607,7 @@ async function mountAppShell(activePage) {
     return null;
   }
 
-  const navRoot = $("#navbar-root");
   const sideRoot = $("#sidebar-root");
-  if (navRoot) navRoot.innerHTML = navbarInnerHTML(user);
   if (sideRoot) sideRoot.innerHTML = sidebarInnerHTML(activePage);
   if (inAdmin) $("#app-shell")?.classList.add("admin-shell");
 
@@ -545,6 +633,187 @@ async function handleLogout() {
   }
   showToast("Signed out.", "info");
   redirectTo("landing");
+}
+
+/* ============================================================
+   PAGE: index.html (landing page)
+    ============================================================ */
+function initLandingPage() {
+  return;
+}
+
+/* ============================================================
+    PAGE: docs.html
+    ============================================================ */
+function initDocsPage() {
+  return;
+}
+
+/* ============================================================
+    PAGE: api-reference.html
+    ============================================================ */
+function initApiReferencePage() {
+  return;
+}
+
+/* ============================================================
+    PAGE: features.html
+    ============================================================ */
+function initFeaturesPage() {
+  return;
+}
+
+/* ============================================================
+    PAGE: pricing.html
+    ============================================================ */
+function initPricingPage() {
+  return;
+}
+
+/* ============================================================
+    PAGE: terms.html
+    ============================================================ */
+function initTermsPage() {
+  return;
+}
+
+/* ============================================================
+    PAGE: privacy.html
+    ============================================================ */
+function initPrivacyPage() {
+  return;
+}
+
+/* ============================================================
+    PAGE: support.html
+    ============================================================ */
+function initSupportPage() {
+  wireForm("complaint", [
+    ["c-name", "Full name", { required: true }],
+    ["c-email", "Email address", { required: true, email: true }],
+    ["c-project", "Project ID", { noSpaces: true }],
+    ["c-category", "Complaint category", { required: true }],
+    ["c-details", "Complaint details", { required: true, min: 20 }],
+  ]);
+  wireForm("suggestion", [
+    ["s-name", "Name", { required: true }],
+    ["s-email", "Email", { required: true, email: true }],
+    ["s-type", "Suggestion type", { required: true }],
+    ["s-details", "Suggestion details", { required: true, min: 20 }],
+  ]);
+}
+
+function wireForm(name, rules) {
+  var form = document.getElementById(name + "-form");
+  var success = document.getElementById(name + "-success");
+  if (!form || !success) return;
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    if (!validate(rules)) return;
+    let payload = new FormData();
+    if (name === "complaint") {
+      payload.append("Name", $("#c-name").value.trim());
+      payload.append("Email", $("#c-email").value.trim());
+
+      let projectId = $("#c-project").value.trim();
+      if (projectId) {
+        payload.append("Complaint.ProjectId", projectId);
+      }
+
+      payload.append("Complaint.Category", $("#c-category").value.trim());
+      payload.append("Complaint.Details", $("#c-details").value.trim());
+
+      let file = $("#c-attach").files[0];
+      if (file) {
+        payload.append("Complaint.Attachment", file);
+      }
+    } else if (name === "suggestion") {
+      payload.append("Name", $("#s-name").value.trim());
+      payload.append("Email", $("#s-email").value.trim());
+      payload.append("Suggestion.Type", $("#s-type").value.trim());
+      payload.append("Suggestion.Details", $("#s-details").value.trim());
+      let expectedImpact = $("#s-impact").value.trim();
+      if (expectedImpact) {
+        payload.append("Suggestion.ExpectedImpact", expectedImpact);
+      }
+    } else {
+      showToast("Unknown form type: " + name, "error");
+      return;
+    }
+    try {
+      await SubmissionService.supportSubmit(payload);
+      form.classList.add("hidden");
+      success.classList.remove("hidden");
+      success.focus();
+    } catch (err) {
+      showToast(
+        friendlyError(err, "Failed to submit. Please try again."),
+        "error",
+      );
+    }
+  });
+  form.addEventListener("input", function (e) {
+    if (e.target && e.target.id) setError(e.target.id, "");
+  });
+  form.addEventListener("reset", function () {
+    rules.forEach(function (r) {
+      setError(r[0], "");
+    });
+  });
+  document
+    .querySelector('[data-reset-form="' + name + '"]')
+    .addEventListener("click", function () {
+      form.reset();
+      success.classList.add("hidden");
+      form.classList.remove("hidden");
+      var first = form.querySelector("input, select, textarea");
+      if (first) first.focus();
+    });
+}
+
+function isValidEmail(v) {
+  var at = v.indexOf("@");
+  var dot = v.lastIndexOf(".");
+  return at > 0 && dot > at + 1 && dot < v.length - 1 && !/\s/.test(v);
+}
+
+function setError(id, message) {
+  var input = document.getElementById(id);
+  var err = document.querySelector('[data-error-for="' + id + '"]');
+  if (!input || !err) return;
+  if (message) {
+    err.textContent = message;
+    err.classList.remove("hidden");
+    input.setAttribute("aria-invalid", "true");
+  } else {
+    err.textContent = "";
+    err.classList.add("hidden");
+    input.removeAttribute("aria-invalid");
+  }
+}
+
+function validate(rules) {
+  var firstInvalid = null;
+  rules.forEach(function (r) {
+    var id = r[0],
+      label = r[1],
+      opt = r[2];
+    var el = document.getElementById(id);
+    var v = (el.value || "").trim();
+    var msg = "";
+    if (opt.required && !v) msg = label + " is required.";
+    else if (v && opt.email && !isValidEmail(v))
+      msg = "Enter a valid email address.";
+    else if (v && opt.min && v.length < opt.min)
+      msg = label + " needs at least " + opt.min + " characters.";
+    else if (v && opt.noSpaces && /\s/.test(v))
+      msg = label + " shouldn't contain spaces.";
+    setError(id, msg);
+    if (msg && !firstInvalid) firstInvalid = el;
+  });
+  if (firstInvalid) firstInvalid.focus();
+  return !firstInvalid;
 }
 
 /* ============================================================
@@ -2663,8 +2932,6 @@ async function openCodeSnippetModal(t) {
 }
 
 function openTestModal(template, project) {
-  const submitUrl = `${BASE_URL}/submit/${project?.publicApiKey || "YOUR_PUBLIC_KEY"}`;
-
   const varRegex = /\{\{\s*([^}]+)\s*\}\}/g;
   const combinedText =
     (template.subject || "") +
@@ -2748,14 +3015,10 @@ function openTestModal(template, project) {
         const reqBody = JSON.parse(payloadText);
 
         // إرسال الطلب الفعلي
-        const res = await fetch(submitUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(reqBody),
-        });
-
-        // محاولة قراءة الرد كـ JSON أو كنص عادي
-        const data = (await res.json().catch(() => null)) || (await res.text());
+        const res = await SubmissionService.submit(
+          project?.publicApiKey,
+          reqBody,
+        );
 
         // عرض الرد
         responseContainer.classList.remove("hidden");
@@ -2765,7 +3028,7 @@ function openTestModal(template, project) {
           : "var(--danger)";
 
         responseBody.textContent =
-          typeof data === "object" ? JSON.stringify(data, null, 2) : data;
+          typeof res === "object" ? JSON.stringify(res, null, 2) : res;
       } catch (error) {
         responseContainer.classList.remove("hidden");
         responseStatus.textContent = "Error Detected";
@@ -5659,6 +5922,18 @@ document.addEventListener("click", async (e) => {
       }
     }
 
+    case "close-toc": {
+      const panel = document.getElementById(target.dataset.target);
+      target.classList.add("hidden");
+      panel.setAttribute("aria-expanded", "false");
+    }
+    case "toggle-toc": {
+      const panel = document.getElementById(target.dataset.target);
+      const isOpen = !panel.classList.contains("hidden");
+      panel.classList.toggle("hidden");
+      target.setAttribute("aria-expanded", String(!isOpen));
+    }
+
     default:
       return;
   }
@@ -5723,6 +5998,25 @@ document.addEventListener("input", (e) => {
       filterTableRows(e.target.value.trim());
     }, 150);
   }
+  if (e.target.id === "faq-search") {
+    var search = e.target;
+    var items = Array.prototype.slice.call(
+      document.querySelectorAll("#faq-list .faq-item"),
+    );
+    var empty = document.getElementById("faq-empty");
+    var count = document.getElementById("faq-count");
+    var q = search.value.trim().toLowerCase();
+    var shown = 0;
+    items.forEach(function (item) {
+      var match = !q || item.textContent.toLowerCase().indexOf(q) !== -1;
+      item.classList.toggle("hidden", !match);
+      if (match) shown++;
+    });
+    empty.classList.toggle("hidden", shown !== 0);
+    count.textContent = q
+      ? shown + " of " + items.length + " questions match"
+      : "";
+  }
 });
 
 /* ============================================================
@@ -5774,24 +6068,30 @@ const PUBLIC_ONLY_PAGE_INIT = {
   login: initLoginPage,
   register: initRegisterPage,
   "reset-password": initResetPasswordPage,
+  pricing: initPricingPage,
+  features: initFeaturesPage,
+  docs: initDocsPage,
+  "api-reference": initApiReferencePage,
+  landing: initLandingPage,
+  support: initSupportPage,
+  privacy: initPrivacyPage,
+  terms: initTermsPage,
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
   const page = document.body.dataset.page;
 
   if (PUBLIC_ONLY_PAGE_INIT[page]) {
+    renderNavbar(null);
     renderFooter(true);
-    return PUBLIC_ONLY_PAGE_INIT[page]();
-  }
-
-  if (page === "landing") {
-    renderFooter(true);
-    return; // fully static/public, no auth guard, no shell to mount
+    await PUBLIC_ONLY_PAGE_INIT[page]();
+    return;
   }
 
   const user = await mountAppShell(page);
   if (!user) return; // mountAppShell already redirected
 
+  renderNavbar(user);
   renderFooter(false);
 
   const init = PAGE_INIT[page];

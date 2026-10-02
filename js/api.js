@@ -2,9 +2,7 @@
    EMAILY — api.js
    Central API configuration + generic fetch wrapper + services.
    ============================================================ */
-//export const BASE_URL = "https://localhost:7104/api";
-export const BASE_URL =
-  "https://emaily-gec9hbg5hng6a3dx.switzerlandnorth-01.azurewebsites.net/api";
+import { BASE_URL } from "./env.js";
 
 const ACCESS_TOKEN_KEY = "emaily_access_token";
 const REFRESH_TOKEN_KEY = "emaily_refresh_token";
@@ -268,6 +266,7 @@ export const SubmissionService = {
   // Public endpoint — no auth header, called from the *client's* form, not this dashboard
   submit: (publicApiKey, formData) =>
     post(`/submit/${publicApiKey}`, formData, { auth: false }),
+  supportSubmit: (formData) => post(`/support`, formData, { auth: false }),
   listByProject: (projectId, page = 1) =>
     get(`/projects/${projectId}/submissions?page=${page}`),
   getById: (submissionId) => get(`/submissions/${submissionId}`),

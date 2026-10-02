@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Documentation — Emaily</title>
+    <meta
+      name="description"
+      content="Set up Emaily from zero: create a project, connect a sending service, build a template, and send your first routed email."
+    />
+    <link rel="icon" href="../assets/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["Sora", "ui-sans-serif", "system-ui", "sans-serif"],
+              body: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+              mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      .docs-toc-link {
+        display: block;
+        padding: 0.45rem 0.75rem;
+        font-size: 0.85rem;
+        color: var(--text-tertiary);
+        border-left: 2px solid transparent;
+        transition:
+          color 160ms ease,
+          border-color 160ms ease;
+      }
+      .docs-toc-link:hover {
+        color: var(--text-primary);
+      }
+    </style>
+  </head>
+  <body class="font-body min-h-screen flex flex-col" data-page="docs">
+    <div
+      id="toast-container"
+      class="fixed top-4 right-4 z-[100] flex flex-col gap-2 items-end"
+    ></div>
+
+    <header class="glass sticky top-0 z-50" id="navbar-root"></header>
+
+    <main class="flex-1">
+      <section class="max-w-7xl mx-auto px-6 pt-12 pb-6">
+        <nav class="text-tertiary text-xs mb-6" aria-label="Breadcrumb">
+          <a
+            href="../index.html"
+            class="hover:text-primary"
+            style="color: var(--text-tertiary)"
+            >Emaily</a
+          >
+          <span class="mx-2">/</span>
+          <span style="color: var(--text-secondary)">Documentation</span>
+        </nav>
+        <h1
+          class="font-display text-3xl md:text-4xl font-extrabold tracking-tight mb-3"
+        >
+          Documentation
+        </h1>
+        <p class="text-secondary max-w-2xl mb-6">
+          Everything you need to go from a fresh account to a working, routed
+          submission endpoint.
+        </p>
+
+        <!-- Mobile TOC toggle -->
+        <button
+          type="button"
+          id="docs-toc-toggle"
+          data-action="toggle-toc"
+          data-target="docs-toc"
+          class="btn btn-ghost btn-sm w-full justify-between lg:hidden mb-6"
+          aria-expanded="false"
+          aria-controls="docs-toc"
+        >
+          <span>On this page</span>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+      </section>
+
+      <section class="max-w-7xl mx-auto px-6 pb-20">
+        <div class="grid lg:grid-cols-[220px_1fr] gap-10 items-start">
+          <!-- ============================================================
+               TABLE OF CONTENTS
+               ============================================================ -->
+          <aside
+            id="docs-toc"
+            class="hidden lg:!block lg:sticky lg:top-24 glass glass-card p-4 lg:bg-transparent lg:border-0 lg:shadow-none lg:p-0"
+          >
+            <nav class="space-y-1" aria-label="Documentation sections">
+              <a href="#introduction" class="docs-toc-link">Introduction</a>
+              <a href="#quick-start" class="docs-toc-link">Quick Start</a>
+              <a href="#access-modes" class="docs-toc-link">Access modes</a>
+              <a href="#templates-variables" class="docs-toc-link"
+                >Templates &amp; variables</a
+              >
+              <a href="#submitting" class="docs-toc-link"
+                >Submitting programmatically</a
+              >
+              <a href="#logs-retries" class="docs-toc-link"
+                >Logs &amp; retries</a
+              >
+              <a href="#integrations" class="docs-toc-link">Integrations</a>
+            </nav>
+          </aside>
+
+          <!-- ============================================================
+               MAIN DOCUMENTATION CONTENT
+               ============================================================ -->
+          <div class="min-w-0 space-y-16 lg:col-start-2">
+            <!-- INTRODUCTION -->
+            <div id="introduction" class="scroll-mt-24">
+              <h2 class="font-display text-2xl font-bold mb-4">Introduction</h2>
+              <p class="text-secondary leading-relaxed mb-3">
+                Emaily receives form submissions through one public endpoint,
+                renders them into an HTML template you've defined, and sends the
+                result through an email account you've connected — Gmail,
+                Outlook, SendGrid, Resend, or plain SMTP.
+              </p>
+              <p class="text-secondary leading-relaxed">
+                Three things make up every project: a
+                <strong>service</strong> (the account that actually sends), a
+                <strong>template</strong> (the HTML and routing rules), and an
+                <strong>access mode</strong>
+                (how strictly the submit endpoint checks who's calling it).
+              </p>
+            </div>
+
+            <!-- QUICK START -->
+            <div id="quick-start" class="scroll-mt-24">
+              <h2 class="font-display text-2xl font-bold mb-6">Quick Start</h2>
+
+              <div class="glass glass-card p-6 mb-5">
+                <div class="flex items-start gap-4">
+                  <span
+                    class="font-display text-2xl font-extrabold text-gradient-aurora shrink-0"
+                    >01</span
+                  >
+                  <div>
+                    <h3 class="font-semibold mb-2">
+                      Register and create a project
+                    </h3>
+                    <p class="text-secondary text-sm leading-relaxed">
+                      Create an account, then create a project from your
+                      dashboard. Every project gets its own
+                      <code class="font-mono text-xs">pub_</code> and
+                      <code class="font-mono text-xs">sec_</code> key pair.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="glass glass-card p-6 mb-5">
+                <div class="flex items-start gap-4">
+                  <span
+                    class="font-display text-2xl font-extrabold text-gradient-aurora shrink-0"
+                    >02</span
+                  >
+                  <div>
+                    <h3 class="font-semibold mb-2">
+                      Connect a sending service
+                    </h3>
+                    <p class="text-secondary text-sm leading-relaxed">
+                      From the project's Services tab, connect Gmail or Outlook
+                      through OAuth, add a SendGrid or Resend API key, or add
+                      any SMTP account with an app password.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="glass glass-card p-6 mb-5">
+                <div class="flex items-start gap-4">
+                  <span
+                    class="font-display text-2xl font-extrabold text-gradient-aurora shrink-0"
+                    >03</span
+                  >
+                  <div>
+                    <h3 class="font-semibold mb-2">Create a template</h3>
+                    <p class="text-secondary text-sm leading-relaxed">
+                      Write the HTML body with
+                      <code class="font-mono text-xs"
+                        >&#123;&#123;variable&#125;&#125;</code
+                      >
+                      placeholders for whatever fields your form collects, set a
+                      subject line, and pick which connected service should send
+                      it.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="glass glass-card p-6 mb-5">
+                <div class="flex items-start gap-4">
+                  <span
+                    class="font-display text-2xl font-extrabold text-gradient-aurora shrink-0"
+                    >04</span
+                  >
+                  <div>
+                    <h3 class="font-semibold mb-2">
+                      Configure the access mode
+                    </h3>
+                    <p class="text-secondary text-sm leading-relaxed">
+                      Decide whether the project accepts calls from a browser
+                      (FrontendOnly, checked against your allowed domains), from
+                      a backend only (BackendOnly, requires the private key), or
+                      both (Hybrid).
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="glass glass-card p-6">
+                <div class="flex items-start gap-4">
+                  <span
+                    class="font-display text-2xl font-extrabold text-gradient-aurora shrink-0"
+                    >05</span
+                  >
+                  <div>
+                    <h3 class="font-semibold mb-2">Submit your first email</h3>
+                    <p class="text-secondary text-sm leading-relaxed mb-4">
+                      POST to your project's submit endpoint with the template
+                      ID and your field values.
+                    </p>
+                    <div class="code-block">
+                      <span class="tok-punc">curl -X POST \</span>
+                      https://BASE-URL/submit/pub_9f2a... \ -H
+                      <span class="tok-str"
+                        >"Content-Type: application/json"</span
+                      >
+                      \ -d
+                      <span class="tok-str"
+                        >'{"templateId":"t_contact_form","fields":{"name":"Sara","message":"Hi!"}}'</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ACCESS MODES -->
+            <div id="access-modes" class="scroll-mt-24">
+              <h2 class="font-display text-2xl font-bold mb-4">Access modes</h2>
+              <p class="text-secondary leading-relaxed mb-5">
+                Every project is set to exactly one of three modes, which
+                changes what the submit endpoint requires:
+              </p>
+              <div class="overflow-x-auto">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Mode</th>
+                      <th>Private key required?</th>
+                      <th>Origin checked?</th>
+                      <th>Typical use</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="font-mono text-xs">FrontendOnly</td>
+                      <td>Must not be sent</td>
+                      <td>Yes, against your allowed domains</td>
+                      <td>A form embedded directly on a website</td>
+                    </tr>
+                    <tr>
+                      <td class="font-mono text-xs">BackendOnly</td>
+                      <td>Required, must match</td>
+                      <td>Not checked</td>
+                      <td>Server-to-server calls only</td>
+                    </tr>
+                    <tr>
+                      <td class="font-mono text-xs">Hybrid</td>
+                      <td>Optional</td>
+                      <td>Checked only when no private key is present</td>
+                      <td>
+                        Supporting both a public form and a backend integration
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="text-tertiary text-xs mt-4">
+                Change a project's mode any time from its settings — see the
+                <a
+                  href="api-reference.html#access-mode"
+                  class="text-gradient-aurora font-semibold"
+                  >API reference</a
+                >
+                for the exact request.
+              </p>
+            </div>
+
+            <!-- TEMPLATES & VARIABLES -->
+            <div id="templates-variables" class="scroll-mt-24">
+              <h2 class="font-display text-2xl font-bold mb-4">
+                Templates &amp; variables
+              </h2>
+              <p class="text-secondary leading-relaxed mb-4">
+                A template's HTML can reference any field from the submitted
+                payload using double curly braces:
+              </p>
+              <div class="code-block mb-4">
+                &lt;h1&gt;New message from
+                &#123;&#123;name&#125;&#125;&lt;/h1&gt;
+                &lt;p&gt;&#123;&#123;message&#125;&#125;&lt;/p&gt;
+              </div>
+              <p class="text-secondary leading-relaxed mb-4">
+                Submitting
+                <code class="font-mono text-xs"
+                  >&#123;"fields":&#123;"name":"Sara","message":"Hi!"&#125;&#125;</code
+                >
+                against that template fills both placeholders before sending.
+                The rendered HTML is sanitized after substitution, so a field
+                value can't inject markup into the final email.
+              </p>
+              <p class="text-secondary leading-relaxed">
+                Each template also has its own reply-to, CC, and BCC settings,
+                an optional reCAPTCHA or App Check requirement, an optional
+                auto-reply template, and a
+                <strong>Save to history</strong> toggle — switching that off
+                means the payload and rendered HTML for its submissions are
+                never stored.
+              </p>
+            </div>
+
+            <!-- SUBMITTING PROGRAMMATICALLY -->
+            <div id="submitting" class="scroll-mt-24">
+              <h2 class="font-display text-2xl font-bold mb-4">
+                Submitting programmatically
+              </h2>
+              <p class="text-secondary leading-relaxed mb-4">
+                The submit endpoint accepts a plain JSON POST from any language.
+                From JavaScript:
+              </p>
+              <div class="code-block">
+                fetch(<span class="tok-str"
+                  >"https://BASE-URL/submit/pub_9f2a..."</span
+                >, &#123; method: <span class="tok-str">"POST"</span>, headers:
+                &#123; <span class="tok-str">"Content-Type"</span>:
+                <span class="tok-str">"application/json"</span> &#125;, body:
+                JSON.stringify(&#123; templateId:
+                <span class="tok-str">"t_contact_form"</span>, fields: &#123;
+                name: <span class="tok-str">"Sara"</span>, message:
+                <span class="tok-str">"Hi!"</span> &#125; &#125;) &#125;)
+                .then((res) =&gt; res.json()) .then((data) =&gt;
+                console.log(data));
+              </div>
+              <p class="text-tertiary text-xs mt-4">
+                A successful call returns
+                <span class="font-mono">202 Accepted</span>. Full field-by-field
+                detail is in the
+                <a
+                  href="api-reference.html#submit"
+                  class="text-gradient-aurora font-semibold"
+                  >API reference</a
+                >.
+              </p>
+            </div>
+
+            <!-- LOGS & RETRIES -->
+            <div id="logs-retries" class="scroll-mt-24">
+              <h2 class="font-display text-2xl font-bold mb-4">
+                Logs &amp; retries
+              </h2>
+              <p class="text-secondary leading-relaxed mb-4">
+                Open <strong>History</strong> in your dashboard and pick a
+                project to see every submission, each with a status — Pending,
+                Sent, Failed, Resent, Discarded, or QuotaExceeded. Opening one
+                shows the original payload, the rendered HTML, and any error
+                message, unless the template that produced it had history-saving
+                turned off.
+              </p>
+              <p class="text-secondary leading-relaxed">
+                A submission with status <strong>Failed</strong> can be retried
+                directly from its detail view, which re-queues it for delivery.
+              </p>
+            </div>
+
+            <!-- INTEGRATIONS -->
+            <div id="integrations" class="scroll-mt-24">
+              <h2 class="font-display text-2xl font-bold mb-4">Integrations</h2>
+              <p class="text-secondary leading-relaxed mb-4">
+                After a successful send, a project can also be configured to:
+              </p>
+              <ul class="list-disc pl-5 space-y-2 text-secondary text-sm">
+                <li>Post a delivery notification to a Telegram chat.</li>
+                <li>
+                  Append a row — timestamp, project, recipient, subject, and
+                  status — to a Google Sheet.
+                </li>
+                <li>
+                  Generate an AI summary of the email and attach it to the
+                  submission record.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="dynamic-footer" class="mt-auto w-full"></footer>
+
+    <div id="modal-root" class="hidden fixed inset-0 z-[90]"></div>
+    <script type="module" src="../js/app.js"></script>
+  </body>
+</html>

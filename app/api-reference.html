@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Reference — Emaily</title>
+    <meta
+      name="description"
+      content="Full API reference for Emaily: authentication, project and template management, the public submit endpoint, and submission history."
+    />
+    <link rel="icon" href="../assets/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["Sora", "ui-sans-serif", "system-ui", "sans-serif"],
+              body: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+              mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      .api-toc-link {
+        display: block;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.82rem;
+        color: var(--text-tertiary);
+        transition: color 160ms ease;
+      }
+      .api-toc-link:hover {
+        color: var(--text-primary);
+      }
+      .method-badge {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.2rem 0.55rem;
+        letter-spacing: 0.04em;
+      }
+      .method-get {
+        color: var(--success);
+        border: 1px solid var(--success);
+      }
+      .method-post {
+        color: var(--aurora-purple);
+        border: 1px solid var(--aurora-purple);
+      }
+      .method-put {
+        color: var(--aurora-cyan);
+        border: 1px solid var(--aurora-cyan);
+      }
+      .method-delete {
+        color: var(--danger);
+        border: 1px solid var(--danger);
+      }
+    </style>
+  </head>
+  <body class="font-body min-h-screen flex flex-col" data-page="api-reference">
+    <div
+      id="toast-container"
+      class="fixed top-4 right-4 z-[100] flex flex-col gap-2 items-end"
+    ></div>
+
+    <header class="glass sticky top-0 z-50" id="navbar-root"></header>
+
+    <main class="flex-1">
+      <section class="max-w-7xl mx-auto px-6 pt-12 pb-6">
+        <nav class="text-tertiary text-xs mb-6" aria-label="Breadcrumb">
+          <a href="../index.html" style="color: var(--text-tertiary)">Emaily</a>
+          <span class="mx-2">/</span>
+          <span style="color: var(--text-secondary)">API Reference</span>
+        </nav>
+        <h1
+          class="font-display leading-normal pt-2 text-3xl md:text-4xl font-extrabold tracking-tight mb-3"
+        >
+          API Reference
+        </h1>
+        <p class="text-secondary max-w-2xl mb-4">
+          Every endpoint documented here is pulled directly from the current
+          backend. Base URL throughout:
+          <code class="font-mono text-xs">https://BASE-URL/{endpoints}</code>
+        </p>
+        <div
+          class="glass glass-card p-4 text-xs text-tertiary leading-relaxed mb-2"
+        >
+          Field names and route structures below are exact. Response JSON casing
+          follows standard ASP.NET Core conventions (camelCase) but hasn't been
+          captured from a live response for every endpoint — verify shapes
+          against your running API before building strict client-side parsing
+          around them.
+        </div>
+
+        <button
+          type="button"
+          id="api-toc-toggle"
+          data-action="toggle-toc"
+          data-target="api-toc"
+          class="btn btn-ghost btn-sm w-full justify-between lg:hidden mt-4"
+          aria-expanded="false"
+          aria-controls="api-toc"
+        >
+          <span>Endpoints</span>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+      </section>
+
+      <section class="max-w-7xl mx-auto px-6 pb-20">
+        <div class="grid lg:grid-cols-[230px_1fr] gap-10 items-start">
+          <!-- ============================================================
+               ENDPOINT NAVIGATION
+               ============================================================ -->
+          <aside
+            id="api-toc"
+            class="hidden lg:!block lg:sticky lg:top-24 glass glass-card p-4 lg:bg-transparent lg:border-0 lg:shadow-none lg:p-0"
+          >
+            <nav class="space-y-4" aria-label="Endpoints">
+              <div>
+                <p
+                  class="text-tertiary pt-4 text-[0.7rem] uppercase tracking-wide font-semibold px-3 mb-1"
+                >
+                  Authentication
+                </p>
+                <a href="#register" class="api-toc-link">Register</a>
+                <a href="#login" class="api-toc-link">Log in</a>
+                <a href="#refresh-token" class="api-toc-link">Refresh token</a>
+              </div>
+              <div>
+                <p
+                  class="text-tertiary text-[0.7rem] uppercase tracking-wide font-semibold px-3 mb-1"
+                >
+                  Submissions
+                </p>
+                <a href="#submit" class="api-toc-link">Submit an email</a>
+                <a href="#submission-history" class="api-toc-link"
+                  >List history</a
+                >
+                <a href="#submission-retry" class="api-toc-link"
+                  >Retry a submission</a
+                >
+              </div>
+              <div>
+                <p
+                  class="text-tertiary text-[0.7rem] uppercase tracking-wide font-semibold px-3 mb-1"
+                >
+                  Projects
+                </p>
+                <a href="#list-projects" class="api-toc-link">List projects</a>
+                <a href="#create-project" class="api-toc-link"
+                  >Create a project</a
+                >
+                <a href="#access-mode" class="api-toc-link">Set access mode</a>
+              </div>
+              <div>
+                <p
+                  class="text-tertiary text-[0.7rem] uppercase tracking-wide font-semibold px-3 mb-1"
+                >
+                  Templates
+                </p>
+                <a href="#list-templates" class="api-toc-link"
+                  >List templates</a
+                >
+                <a href="#create-template" class="api-toc-link"
+                  >Create a template</a
+                >
+              </div>
+            </nav>
+          </aside>
+
+          <!-- ============================================================
+               ENDPOINT DETAIL
+               ============================================================ -->
+          <div class="min-w-0 space-y-14 lg:col-start-2">
+            <!-- ======================= AUTHENTICATION ======================= -->
+            <div>
+              <h2 class="font-display text-xl font-bold mb-5">
+                Authentication
+              </h2>
+
+              <div
+                id="register"
+                class="glass glass-panel p-6 mb-5 scroll-mt-24"
+              >
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                  <span class="method-badge method-post">POST</span>
+                  <code class="font-mono text-sm">/api/auth/register</code>
+                  <span class="status-pill is-neutral">Public</span>
+                </div>
+                <p class="text-secondary text-sm leading-relaxed mb-4">
+                  Creates an account. Requires a valid email-verification token
+                  obtained from
+                  <code class="font-mono text-xs"
+                    >POST /api/auth/send-verification-email</code
+                  >
+                  first. On success, auto-creates a Free-plan subscription.
+                </p>
+                <p class="field-label mb-2">Request body</p>
+                <div class="code-block mb-4">
+                  &#123;
+                  <span class="tok-key">"email"</span>:
+                  <span class="tok-str">"sara&#64;example.com"</span>,
+                  <span class="tok-key">"password"</span>:
+                  <span class="tok-str">"••••••••"</span>,
+                  <span class="tok-key">"verificationToken"</span>:
+                  <span class="tok-str">"..."</span>
+                  &#125;
+                </div>
+                <p class="field-label mb-2">
+                  Response
+                  <span class="text-tertiary font-normal">201 Created</span>
+                </p>
+                <div class="code-block">
+                  &#123; <span class="tok-key">"message"</span>:
+                  <span class="tok-str">"Account created."</span> &#125;
+                </div>
+              </div>
+
+              <div id="login" class="glass glass-panel p-6 mb-5 scroll-mt-24">
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                  <span class="method-badge method-post">POST</span>
+                  <code class="font-mono text-sm">/api/auth/login</code>
+                  <span class="status-pill is-neutral">Public</span>
+                </div>
+                <p class="text-secondary text-sm leading-relaxed mb-4">
+                  Authenticates with email and password. Returns a 10-minute
+                  HS256 access token and a 7-day refresh token.
+                </p>
+                <p class="field-label mb-2">Request body</p>
+                <div class="code-block mb-4">
+                  &#123;
+                  <span class="tok-key">"email"</span>:
+                  <span class="tok-str">"sara&#64;example.com"</span>,
+                  <span class="tok-key">"password"</span>:
+                  <span class="tok-str">"••••••••"</span>
+                  &#125;
+                </div>
+                <p class="field-label mb-2">
+                  Response <span class="text-tertiary font-normal">200 OK</span>
+                </p>
+                <div class="code-block">
+                  &#123;
+                  <span class="tok-key">"accessToken"</span>:
+                  <span class="tok-str">"eyJ..."</span>,
+                  <span class="tok-key">"refreshToken"</span>:
+                  <span class="tok-str">"..."</span>
+                  &#125;
+                </div>
+              </div>
+
+              <div
+                id="refresh-token"
+                class="glass glass-panel p-6 scroll-mt-24"
+              >
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                  <span class="method-badge method-post">POST</span>
+                  <code class="font-mono text-sm">/api/auth/refresh-token</code>
+                  <span class="status-pill is-neutral">Public</span>
+                </div>
+                <p class="text-secondary text-sm leading-relaxed">
+                  Exchanges an unused, unrevoked, unexpired refresh token for a
+                  new access/refresh pair. The old refresh token is marked used
+                  and cannot be exchanged again — each refresh rotates the
+                  token.
+                </p>
+              </div>
+            </div>
+
+            <!-- ======================= SUBMIT ======================= -->
+            <div>
+              <h2 class="font-display text-xl font-bold mb-5">Submissions</h2>
+
+              <div
+                id="submit"
+                class="glass glass-panel p-6 mb-5 scroll-mt-24"
+                style="border-color: var(--aurora-purple); border-style: solid"
+              >
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                  <span class="method-badge method-post">POST</span>
+                  <code class="font-mono text-sm"
+                    >/api/submit/&#123;publicApiKey&#125;</code
+                  >
+                  <span class="status-pill is-neutral">Public · anonymous</span>
+                </div>
+                <p class="text-secondary text-sm leading-relaxed mb-4">
+                  Queues a submission for delivery. Anonymous, CORS allows all
+                  origins, rate-limited to 10 requests/minute per IP, 3 MB body
+                  limit. Processed asynchronously — the response confirms the
+                  submission was accepted, not that the email was delivered.
+                </p>
+
+                <p class="field-label mb-2">Request body</p>
+                <div class="overflow-x-auto mb-4">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Notes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="font-mono text-xs">templateId</td>
+                        <td>string</td>
+                        <td>
+                          Required. A
+                          <code class="font-mono text-xs">t_…</code> template
+                          ID.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="font-mono text-xs">privateKey</td>
+                        <td>string</td>
+                        <td>
+                          A <code class="font-mono text-xs">sec_…</code> key.
+                          Required for BackendOnly projects, forbidden for
+                          FrontendOnly.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="font-mono text-xs">recipientEmail</td>
+                        <td>string</td>
+                        <td>Optional, backend-mode only.</td>
+                      </tr>
+                      <tr>
+                        <td class="font-mono text-xs">recipientName</td>
+                        <td>string</td>
+                        <td>Optional, backend-mode only.</td>
+                      </tr>
+                      <tr>
+                        <td class="font-mono text-xs">recaptchaToken</td>
+                        <td>string</td>
+                        <td>
+                          Required if the template has reCAPTCHA v2 enabled.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="font-mono text-xs">appCheckToken</td>
+                        <td>string</td>
+                        <td>Required if the template has App Check enabled.</td>
+                      </tr>
+                      <tr>
+                        <td class="font-mono text-xs">fields</td>
+                        <td>object</td>
+                        <td>
+                          Key/value pairs filling the template's
+                          <code class="font-mono text-xs"
+                            >&#123;&#123;variables&#125;&#125;</code
+                          >.
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <p class="field-label mb-2">
+                  Response
+                  <span class="text-tertiary font-normal">on success</span>
+                </p>
+                <div class="code-block mb-4">
+                  &#123; <span class="tok-key">"message"</span>:
+                  <span class="tok-str"
+                    >"The email has been successfully queued."</span
+                  >
+                  &#125;
+                </div>
+
+                <p class="field-label mb-2">Error responses</p>
+                <div class="overflow-x-auto mb-5">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Status</th>
+                        <th>Cause</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="font-mono text-xs">400</td>
+                        <td>
+                          Rendered HTML body was empty after variable
+                          substitution.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="font-mono text-xs">403</td>
+                        <td>
+                          Invalid private key, Origin not in the allowed
+                          domains, failed reCAPTCHA/App Check, or unsafe HTML
+                          rejected by the sanitizer.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="font-mono text-xs">404</td>
+                        <td>Public API key doesn't match any project.</td>
+                      </tr>
+                      <tr>
+                        <td class="font-mono text-xs">429</td>
+                        <td>Rate limit exceeded (10/min/IP).</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="snippet-tabs">
+                  <button
+                    type="button"
+                    class="snippet-tab is-active"
+                    data-action="switch-snippet-tab"
+                    data-lang="curl"
+                  >
+                    cURL
+                  </button>
+                  <button
+                    type="button"
+                    class="snippet-tab"
+                    data-action="switch-snippet-tab"
+                    data-lang="js"
+                  >
+                    JavaScript
+                  </button>
+                </div>
+                <div data-snippet-panel="curl">
+                  <pre class="code-block" style="white-space: pre-wrap">
+curl -X POST \
+  https://BASE-URL/submit/pub_9f2a... \
+  -H "Content-Type: application/json" \
+  -d '{"templateId":"t_contact_form","fields":{"name":"Sara","message":"Hi!"}}'</pre
+                  >
+                  <button
+                    type="button"
+                    class="copy-btn mt-2"
+                    data-action="copy-text"
+                    data-copy='curl -X POST https://BASE-URL/submit/pub_9f2a... -H "Content-Type: application/json" -d "{\"templateId\":\"t_contact_form\",\"fields\":{\"name\":\"Sara\",\"message\":\"Hi!\"}}"'
+                  >
+                    Copy snippet
+                  </button>
+                </div>
+                <div data-snippet-panel="js" class="hidden">
+                  <pre class="code-block" style="white-space: pre-wrap">
+fetch("https://BASE-URL/submit/pub_9f2a...", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    templateId: "t_contact_form",
+    fields: { name: "Sara", message: "Hi!" }
+  })
+})
+  .then((res) => res.json())
+  .then((data) => console.log(data));</pre
+                  >
+                  <button
+                    type="button"
+                    class="copy-btn mt-2"
+                    data-action="copy-text"
+                    data-copy='fetch("https://BASE-URL/submit/pub_9f2a...", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ templateId: "t_contact_form", fields: { name: "Sara", message: "Hi!" } }) }).then((res) => res.json()).then((data) => console.log(data));'
+                  >
+                    Copy snippet
+                  </button>
+                </div>
+              </div>
+
+              <div
+                id="submission-history"
+                class="glass glass-panel p-6 mb-5 scroll-mt-24"
+              >
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                  <span class="method-badge method-get">GET</span>
+                  <code class="font-mono text-sm"
+                    >/api/projects/&#123;id&#125;/submissions</code
+                  >
+                  <span class="status-pill is-neutral">Auth required</span>
+                </div>
+                <p class="text-secondary text-sm leading-relaxed">
+                  Returns paged submission history for a project. Each entry
+                  includes status (<span class="font-mono text-xs">Pending</span
+                  >, <span class="font-mono text-xs">Sent</span>,
+                  <span class="font-mono text-xs">Failed</span>,
+                  <span class="font-mono text-xs">Resent</span>,
+                  <span class="font-mono text-xs">Discarded</span>, or
+                  <span class="font-mono text-xs">QuotaExceeded</span>).
+                </p>
+              </div>
+
+              <div
+                id="submission-retry"
+                class="glass glass-panel p-6 scroll-mt-24"
+              >
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                  <span class="method-badge method-post">POST</span>
+                  <code class="font-mono text-sm"
+                    >/api/submissions/&#123;id&#125;/retry</code
+                  >
+                  <span class="status-pill is-neutral">Auth required</span>
+                </div>
+                <p class="text-secondary text-sm leading-relaxed">
+                  Re-queues a failed submission for delivery. Blocked for
+                  submissions that were already sent, or that came from a
+                  template with privacy mode on (their payload was never stored,
+                  so there's nothing to retry).
+                </p>
+              </div>
+            </div>
+
+            <!-- ======================= PROJECTS ======================= -->
+            <div>
+              <h2 class="font-display text-xl font-bold mb-5">Projects</h2>
+
+              <div
+                id="list-projects"
+                class="glass glass-panel p-6 mb-5 scroll-mt-24"
+              >
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                  <span class="method-badge method-get">GET</span>
+                  <code class="font-mono text-sm">/api/projects</code>
+                  <span class="status-pill is-neutral">Auth required</span>
+                </div>
+                <p class="text-secondary text-sm leading-relaxed">
+                  Lists every project owned by the authenticated user.
+                </p>
+              </div>
+
+              <div
+                id="create-project"
+                class="glass glass-panel p-6 mb-5 scroll-mt-24"
+              >
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                  <span class="method-badge method-post">POST</span>
+                  <code class="font-mono text-sm">/api/projects</code>
+                  <span class="status-pill is-neutral">Auth required</span>
+                </div>
+                <p class="text-secondary text-sm leading-relaxed">
+                  Creates a project and issues its
+                  <code class="font-mono text-xs">pub_…</code> /
+                  <code class="font-mono text-xs">sec_…</code> key pair. Blocked
+                  once you're at your plan's project limit.
+                </p>
+              </div>
+
+              <div id="access-mode" class="glass glass-panel p-6 scroll-mt-24">
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                  <span class="method-badge method-put">PUT</span>
+                  <code class="font-mono text-sm"
+                    >/api/projects/&#123;id&#125;/access-mode</code
+                  >
+                  <span class="status-pill is-neutral">Auth required</span>
+                </div>
+                <p class="text-secondary text-sm leading-relaxed mb-4">
+                  Switches a project's access mode between
+                  <code class="font-mono text-xs">FrontendOnly</code>,
+                  <code class="font-mono text-xs">BackendOnly</code>, and
+                  <code class="font-mono text-xs">Hybrid</code> — see
+                  <a
+                    href="docs.html#access-modes"
+                    class="text-gradient-aurora font-semibold"
+                    >Access modes</a
+                  >
+                  in the docs for what each mode enforces on the submit
+                  endpoint.
+                </p>
+                <div class="snippet-tabs">
+                  <button
+                    type="button"
+                    class="snippet-tab is-active"
+                    data-action="switch-snippet-tab"
+                    data-lang="curl2"
+                  >
+                    cURL
+                  </button>
+                  <button
+                    type="button"
+                    class="snippet-tab"
+                    data-action="switch-snippet-tab"
+                    data-lang="js2"
+                  >
+                    JavaScript
+                  </button>
+                </div>
+                <div data-snippet-panel="curl2">
+                  <pre class="code-block" style="white-space: pre-wrap">
+curl -X PUT \
+  https://BASE-URL/projects/p_xxxx/access-mode \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"accessMode":"Hybrid"}'</pre
+                  >
+                  <button
+                    type="button"
+                    class="copy-btn mt-2"
+                    data-action="copy-text"
+                    data-copy='curl -X PUT https://BASE-URL/projects/p_xxxx/access-mode -H "Authorization: Bearer YOUR_ACCESS_TOKEN" -H "Content-Type: application/json" -d "{\"accessMode\":\"Hybrid\"}"'
+                  >
+                    Copy snippet
+                  </button>
+                </div>
+                <div data-snippet-panel="js2" class="hidden">
+                  <pre class="code-block" style="white-space: pre-wrap">
+fetch("https://BASE-URL/projects/p_xxxx/access-mode", {
+  method: "PUT",
+  headers: {
+    "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ accessMode: "Hybrid" })
+});</pre
+                  >
+                  <button
+                    type="button"
+                    class="copy-btn mt-2"
+                    data-action="copy-text"
+                    data-copy='fetch("https://BASE-URL/projects/p_xxxx/access-mode", { method: "PUT", headers: { "Authorization": "Bearer YOUR_ACCESS_TOKEN", "Content-Type": "application/json" }, body: JSON.stringify({ accessMode: "Hybrid" }) });'
+                  >
+                    Copy snippet
+                  </button>
+                </div>
+                <p class="text-tertiary text-xs mt-4">
+                  The body field name above (<code class="font-mono text-xs"
+                    >accessMode</code
+                  >) follows this API's camelCase convention but wasn't given
+                  verbatim in the backend summary — confirm it matches your
+                  actual DTO before relying on it.
+                </p>
+              </div>
+            </div>
+
+            <!-- ======================= TEMPLATES ======================= -->
+            <div>
+              <h2 class="font-display text-xl font-bold mb-5">Templates</h2>
+
+              <div
+                id="list-templates"
+                class="glass glass-panel p-6 mb-5 scroll-mt-24"
+              >
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                  <span class="method-badge method-get">GET</span>
+                  <code class="font-mono text-sm"
+                    >/api/projects/&#123;id&#125;/templates</code
+                  >
+                  <span class="status-pill is-neutral">Auth required</span>
+                </div>
+                <p class="text-secondary text-sm leading-relaxed">
+                  Lists every template belonging to a project.
+                </p>
+              </div>
+
+              <div
+                id="create-template"
+                class="glass glass-panel p-6 scroll-mt-24"
+              >
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                  <span class="method-badge method-post">POST</span>
+                  <code class="font-mono text-sm"
+                    >/api/projects/&#123;id&#125;/templates</code
+                  >
+                  <span class="status-pill is-neutral">Auth required</span>
+                </div>
+                <p class="text-secondary text-sm leading-relaxed">
+                  Creates a template. The HTML content is capped at 3 MB and is
+                  blocked once you're at your plan's template limit for that
+                  project.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="dynamic-footer" class="mt-auto w-full"></footer>
+
+    <div id="modal-root" class="hidden fixed inset-0 z-[90]"></div>
+    <script type="module" src="../js/app.js"></script>
+  </body>
+</html>

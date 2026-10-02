@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Features — Emaily</title>
+    <meta
+      name="description"
+      content="Every real capability behind Emaily: multi-provider routing, dual-key security, template automation, and full submission tracing."
+    />
+    <link rel="icon" href="../assets/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["Sora", "ui-sans-serif", "system-ui", "sans-serif"],
+              body: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+              mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="font-body min-h-screen flex flex-col" data-page="features">
+    <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 items-end"></div>
+
+    <header class="glass sticky top-0 z-50" id="navbar-root"></header>
+
+    <main class="flex-1">
+      <!-- ============================================================
+           INTRO
+           ============================================================ -->
+      <section class="max-w-5xl mx-auto px-6 pt-16 pb-12 md:pt-20">
+        <div class="badge-pill mb-6"><span class="dot"></span> Features</div>
+        <h1 class="font-display text-4xl md:text-5xl font-extrabold leading-[1.1] tracking-tight mb-5">
+          Everything that actually runs
+          <span class="text-gradient-aurora">behind every send.</span>
+        </h1>
+        <p class="text-lg text-secondary max-w-2xl leading-relaxed">
+          Nothing on this page is aspirational. Each capability below is
+          implemented in the current backend, grouped by what it's for.
+        </p>
+      </section>
+
+      <!-- ============================================================
+           GROUP 1 — PROVIDER ROUTING
+           ============================================================ -->
+      <section id="provider-routing" class="max-w-6xl mx-auto px-6 py-10">
+        <div class="max-w-2xl mb-8">
+          <p class="badge-pill mb-4">Provider routing</p>
+          <h2 class="font-display text-3xl font-bold">Send through the account you already own</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="glass glass-card p-6">
+            <span class="status-pill is-neutral font-mono mb-3 inline-flex">OAuth2</span>
+            <h3 class="font-display font-semibold text-lg mb-2">Multi-provider OAuth2 routing</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: authorizes Gmail or Microsoft through a real OAuth2
+              consent flow — a popup opens, you approve, and Emaily receives
+              tokens via <code class="font-mono text-xs">window.opener.postMessage</code>.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> anyone who'd rather not manage SMTP credentials by hand.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> tokens are refreshed automatically before every send when they're close to expiry, so a connection stays alive without you doing anything.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <span class="status-pill is-neutral font-mono mb-3 inline-flex">OAuth · gmail.send</span>
+            <h3 class="font-display font-semibold text-lg mb-2">Gmail integration</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: connects a Gmail account using only the
+              <code class="font-mono text-xs">gmail.send</code> scope.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> anyone already using Gmail for their project or business.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> that scope can send mail and nothing else — Emaily is never granted read access to your inbox.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <span class="status-pill is-neutral font-mono mb-3 inline-flex">Microsoft Graph · Mail.Send</span>
+            <h3 class="font-display font-semibold text-lg mb-2">Microsoft Graph API integration</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: connects Outlook / Microsoft 365 via the Microsoft
+              identity platform, using <code class="font-mono text-xs">Mail.Send</code>
+              and <code class="font-mono text-xs">offline_access</code> scopes.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> teams standardized on Microsoft 365 or Outlook.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> same minimal-permission principle as Gmail — send-only access, nothing broader.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <span class="status-pill is-neutral font-mono mb-3 inline-flex">API key</span>
+            <h3 class="font-display font-semibold text-lg mb-2">SendGrid &amp; Resend integration</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: connects a transactional email provider with an
+              API key instead of OAuth — supported for both SendGrid and Resend.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> teams already paying for a dedicated sending provider.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> no OAuth consent screen to manage — connect once with a key and you're done.</p>
+          </div>
+        </div>
+        <div class="glass glass-card p-6 mt-5">
+          <span class="status-pill is-neutral font-mono mb-3 inline-flex">App password</span>
+          <h3 class="font-display font-semibold text-lg mb-2">SMTP with an app password</h3>
+          <p class="text-secondary text-sm leading-relaxed mb-3">
+            What it does: connects any provider that issues app-specific
+            passwords over SMTP with STARTTLS, for cases OAuth or an API key
+            doesn't cover.
+          </p>
+          <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> anyone on a provider outside the OAuth/API-key list above.</p>
+          <p class="text-tertiary text-xs"><strong>Why it matters:</strong> the password is encrypted at rest, not stored in plain text next to your project.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           GROUP 2 — SECURITY
+           ============================================================ -->
+      <section id="security" class="max-w-6xl mx-auto px-6 py-10">
+        <div class="max-w-2xl mb-8">
+          <p class="badge-pill mb-4">Enterprise-grade security</p>
+          <h2 class="font-display text-3xl font-bold">Security that doesn't depend on you getting it right</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">Symmetric HS256 JWTs</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: issues short-lived (10-minute) access tokens signed
+              with HS256, each carrying a <code class="font-mono text-xs">purpose: login</code>
+              claim that's checked on every request.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> every authenticated user, transparently.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> the purpose claim means a password-reset or email-verification token — even if leaked — can never be replayed as a login session. Refresh tokens rotate on use, and logout immediately blacklists the access token.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">App Check with custom expected issuers</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: lets a template require an App Check JWT on public
+              submissions, verified against a per-template symmetric secret,
+              with an optional expected-issuer check you configure yourself.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> forms embedded in apps that already issue their own attestation tokens.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> forged, expired, or wrong-key tokens are rejected with a 403 before anything is processed.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">reCAPTCHA v2 with hostname matching</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: verifies reCAPTCHA server-side against Google, then
+              checks the token's hostname against your project's allowed
+              domains — so a stolen token from another site can't be replayed.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> any public-facing form, especially ones that have attracted spam before.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> the hostname check is what stops a copy-pasted token from a scraped page.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">Dual-key access modes</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: every project has a <code class="font-mono text-xs">pub_</code>
+              key and a <code class="font-mono text-xs">sec_</code> key, and you
+              choose FrontendOnly, BackendOnly, or Hybrid enforcement.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> anyone deciding how exposed a project's submit endpoint should be.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> a public form only ever needs the public key; a server-to-server integration can require the private one.</p>
+          </div>
+        </div>
+        <div class="glass glass-card p-6 mt-5">
+          <h3 class="font-display font-semibold text-lg mb-2">Escalating auto-ban abuse prevention</h3>
+          <p class="text-secondary text-sm leading-relaxed mb-3">
+            What it does: rate-limit violations accumulate a weighted score in
+            a rolling window; crossing the threshold triggers an automatic
+            ban that escalates — 1 minute, 5 minutes, 15 minutes, 1 hour,
+            6 hours, 24 hours, 7 days, 30 days — the more it keeps happening.
+          </p>
+          <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> every project, without any configuration required.</p>
+          <p class="text-tertiary text-xs"><strong>Why it matters:</strong> a first-time mistake gets a minute-long timeout; a determined abuser gets locked out for a month, and admins are notified for anything over 24 hours.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           GROUP 3 — TEMPLATES & CONTENT
+           ============================================================ -->
+      <section id="templates" class="max-w-6xl mx-auto px-6 py-10">
+        <div class="max-w-2xl mb-8">
+          <p class="badge-pill mb-4">Templates</p>
+          <h2 class="font-display text-3xl font-bold">A template editor that's actually a routing config</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">JSON &amp; HTML template editor</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: templates store subject and HTML content with
+              <code class="font-mono text-xs">&#123;&#123;variable&#125;&#125;</code>
+              placeholders filled in from the submission payload, plus
+              routing fields like reply-to, CC, and BCC.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> anyone who wants one endpoint to power several differently-formatted emails.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> the rendered HTML is sanitized after substitution, so a malicious field value can't inject markup into the final email.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">Auto-reply chaining</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: a template can be configured to automatically
+              trigger a second template as an auto-reply once the first
+              send succeeds.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> contact forms that want to confirm receipt to the sender automatically.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> no extra API call from your side — it's configured once on the template.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">Attachments</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: attaches static files to every email a template
+              sends, up to a per-template count set by your plan.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> templates that need to include a PDF, brochure, or similar file every time.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> the limit is enforced per plan, so it scales with what you're paying for.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">Privacy mode</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: when <code class="font-mono text-xs">DoSaveInHistory</code>
+              is off, the submission payload and rendered HTML are never
+              stored at all.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> forms that collect anything sensitive and shouldn't leave a persistent copy.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> the trade-off is real and visible — a private submission can't be inspected in detail or retried later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           GROUP 4 — OBSERVABILITY & TRACING
+           ============================================================ -->
+      <section id="tracing" class="max-w-6xl mx-auto px-6 py-10">
+        <div class="max-w-2xl mb-8">
+          <p class="badge-pill mb-4">Observability</p>
+          <h2 class="font-display text-3xl font-bold">Detailed email submission tracing</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">Full status lifecycle</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: every submission is tracked through
+              <span class="font-mono text-xs">Pending → Sent</span> or
+              <span class="font-mono text-xs">Failed</span> /
+              <span class="font-mono text-xs">Resent</span> /
+              <span class="font-mono text-xs">Discarded</span> /
+              <span class="font-mono text-xs">QuotaExceeded</span>, queued
+              asynchronously so your form's response isn't blocked on delivery.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> anyone who's ever had a "did that actually send?" moment.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> a failed send is visible immediately, not discovered from a complaint days later.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">Raw body logs</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: submission details include the original payload
+              and the rendered HTML body, plus any error message, so you can
+              see exactly what was received and what was sent — unless
+              privacy mode was on for that template.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> debugging a "the email looked wrong" report.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> you're looking at the actual data, not a guess reconstructed from your own template code.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">One-click retry</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: a failed submission can be re-queued directly
+              from its history entry, as long as it wasn't marked private
+              or already sent.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> anyone recovering from a temporary provider outage or a misconfigured service.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> no need to re-trigger the original form submission to try again.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">AI-generated summaries</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: after a successful send, an AI summary of the
+              email's content is generated and attached to the submission
+              record.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> anyone triaging a high volume of submissions without reading every one in full.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> a bullet-point summary at a glance, without opening the full email body.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           GROUP 5 — PROJECT-LEVEL CONTROLS
+           ============================================================ -->
+      <section id="project-controls" class="max-w-6xl mx-auto px-6 py-10">
+        <div class="max-w-2xl mb-8">
+          <p class="badge-pill mb-4">Project-level controls</p>
+          <h2 class="font-display text-3xl font-bold">Every project is its own configurable unit</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">Domain allow-listing</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: for FrontendOnly and Hybrid projects, the request's
+              Origin header is checked case-insensitively against a
+              comma-separated allow-list you set per project.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> any project embedded in a specific site or set of sites.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> your public key only works from domains you've explicitly approved.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">Key regeneration &amp; access-mode switching</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: regenerate a project's public/private key pair at
+              any time, and switch between FrontendOnly, BackendOnly, and
+              Hybrid without recreating the project.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> anyone rotating a key after it's been exposed, or changing how a project is integrated.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> a compromised key doesn't mean starting over.</p>
+          </div>
+          <div class="glass glass-card p-6 md:col-span-2">
+            <h3 class="font-display font-semibold text-lg mb-2">Plan-based limits, with graceful locking</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: every plan caps monthly emails, projects, services,
+              templates, and attachments per template. If you're ever over a
+              limit after a downgrade, the excess resources are locked rather
+              than deleted, and can be unlocked again within your new plan's
+              allowance.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> anyone who downgrades and doesn't want to lose their configuration.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> nothing is silently deleted for being over a limit.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           GROUP 6 — DEVELOPER-FOCUSED WORKFLOWS
+           ============================================================ -->
+      <section id="developer-workflows" class="max-w-6xl mx-auto px-6 py-10 pb-20">
+        <div class="max-w-2xl mb-8">
+          <p class="badge-pill mb-4">Developer-focused workflows</p>
+          <h2 class="font-display text-3xl font-bold">Built to be called, not installed</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">One endpoint, no SDK</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: every submission goes through
+              <code class="font-mono text-xs">POST /api/submit/&#123;publicApiKey&#125;</code>
+              — a plain HTTP POST with a JSON body.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> any language or framework that can send an HTTP request.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> nothing to install, version, or keep updated on your side.</p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold text-lg mb-2">Asynchronous, queued delivery</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-3">
+              What it does: submissions are processed as background jobs, so
+              your form gets an immediate response while the actual send
+              happens right after.
+            </p>
+            <p class="text-tertiary text-xs mb-1"><strong>Who benefits:</strong> forms where a slow third-party mail provider shouldn't slow down the user's browser.</p>
+            <p class="text-tertiary text-xs"><strong>Why it matters:</strong> your endpoint's response time isn't at the mercy of Gmail's, Outlook's, or SendGrid's.</p>
+          </div>
+        </div>
+        <div class="text-center mt-10">
+          <a href="../src/register.html" class="btn btn-aurora">Get your API key</a>
+        </div>
+      </section>
+    </main>
+
+    <footer id="dynamic-footer" class="mt-auto w-full"></footer>
+
+    <div id="modal-root" class="hidden fixed inset-0 z-[90]"></div>
+    <script type="module" src="../js/app.js"></script>
+  </body>
+</html>

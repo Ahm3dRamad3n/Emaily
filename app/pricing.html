@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pricing — Emaily</title>
+    <meta
+      name="description"
+      content="Emaily pricing: Free, Pro, and Business plans with transparent limits on projects, services, templates, attachments, and monthly emails."
+    />
+    <link rel="icon" href="../assets/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["Sora", "ui-sans-serif", "system-ui", "sans-serif"],
+              body: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+              mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="font-body min-h-screen flex flex-col" data-page="pricing">
+    <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 items-end"></div>
+
+    <header class="glass sticky top-0 z-50" id="navbar-root"></header>
+
+    <main class="flex-1">
+      <!-- ============================================================
+           INTRO
+           ============================================================ -->
+      <section class="max-w-5xl mx-auto px-6 pt-16 pb-10 md:pt-20 text-center">
+        <div class="badge-pill mb-6 inline-flex"><span class="dot"></span> Pricing</div>
+        <h1 class="font-display text-4xl md:text-5xl font-extrabold leading-[1.1] tracking-tight mb-5">
+          Start free. <span class="text-gradient-aurora">Scale when you need to.</span>
+        </h1>
+        <p class="text-lg text-secondary max-w-xl mx-auto leading-relaxed">
+          Every plan includes the full routing engine, dual-key security, and
+          submission tracing — plans differ only in volume and automation add-ons.
+        </p>
+      </section>
+
+      <!-- ============================================================
+           PRICING TABLE
+           ============================================================ -->
+      <section class="max-w-6xl mx-auto px-6 py-10">
+        <div class="grid md:grid-cols-3 gap-5 items-stretch">
+          <!-- FREE -->
+          <div class="glass glass-card p-7 flex flex-col">
+            <h2 class="font-display font-semibold text-xl mb-1">Free</h2>
+            <p class="text-tertiary text-xs mb-5">Included automatically when you sign up</p>
+            <p class="mb-6">
+              <span class="font-display text-4xl font-extrabold">$0</span>
+              <span class="text-tertiary text-sm">/mo</span>
+            </p>
+            <ul class="space-y-3 text-sm mb-8 flex-1">
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>1</strong> project</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>1</strong> service</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>3</strong> templates</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>0</strong> attachments / template</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>300</strong> emails / month</span>
+              </li>
+              <li class="h-px my-1" style="background: var(--glass-border)"></li>
+              <li class="flex items-center gap-2 text-tertiary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <span class="line-through">AI auto-summarization</span>
+              </li>
+              <li class="flex items-center gap-2 text-tertiary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <span class="line-through">Google Sheets integration</span>
+              </li>
+              <li class="flex items-center gap-2 text-tertiary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <span class="line-through">Telegram bot integration</span>
+              </li>
+            </ul>
+            <a href="../src/register.html" class="btn btn-ghost w-full justify-center">Get started free</a>
+          </div>
+
+          <!-- PRO -->
+          <div class="glass glass-card p-7 flex flex-col" style="border-color: var(--aurora-purple); border-style: solid;">
+            <p class="badge-pill mb-3 inline-flex">Recommended</p>
+            <h2 class="font-display font-semibold text-xl mb-1">Pro</h2>
+            <p class="text-tertiary text-xs mb-5">For production projects with real volume</p>
+            <p class="mb-6">
+              <span class="font-display text-4xl font-extrabold">$19</span>
+              <span class="text-tertiary text-sm">/mo</span>
+            </p>
+            <ul class="space-y-3 text-sm mb-8 flex-1">
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>5</strong> projects</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>5</strong> services</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>20</strong> templates</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>2</strong> attachments / template</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>5,000</strong> emails / month</span>
+              </li>
+              <li class="h-px my-1" style="background: var(--glass-border)"></li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>AI auto-summarization</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Google Sheets integration</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Telegram bot integration</span>
+              </li>
+            </ul>
+            <a href="../src/register.html" class="btn btn-aurora w-full justify-center">Upgrade to Pro</a>
+          </div>
+
+          <!-- BUSINESS -->
+          <div class="glass glass-card p-7 flex flex-col">
+            <h2 class="font-display font-semibold text-xl mb-1">Business</h2>
+            <p class="text-tertiary text-xs mb-5">For high-volume and multi-client use</p>
+            <p class="mb-6">
+              <span class="font-display text-4xl font-extrabold">$79</span>
+              <span class="text-tertiary text-sm">/mo</span>
+            </p>
+            <ul class="space-y-3 text-sm mb-8 flex-1">
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>25</strong> projects</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>20</strong> services</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>100</strong> templates</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>5</strong> attachments / template</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>50,000</strong> emails / month</span>
+              </li>
+              <li class="h-px my-1" style="background: var(--glass-border)"></li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>AI auto-summarization</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Google Sheets integration</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" class="shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Telegram bot integration</span>
+              </li>
+            </ul>
+            <a href="../src/register.html" class="btn btn-ghost w-full justify-center">Upgrade to Business</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           QUOTA BEHAVIOR NOTE
+           ============================================================ -->
+      <section class="max-w-4xl mx-auto px-6 py-10">
+        <div class="glass glass-panel p-7">
+          <h2 class="font-display font-semibold text-lg mb-3">What happens at your monthly limit?</h2>
+          <p class="text-secondary text-sm leading-relaxed">
+            On any plan, submissions past your monthly email limit are marked
+            <code class="font-mono text-xs">QuotaExceeded</code> instead of being
+            sent. On paid plans that status is tracked and visible in your
+            history so you know exactly what was skipped; on the Free plan,
+            going over simply blocks further sends until the next cycle.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           CROSS-LINKS
+           ============================================================ -->
+      <section class="max-w-4xl mx-auto px-6 py-10 pb-20 text-center">
+        <p class="text-secondary mb-5">
+          Want the full technical breakdown of what's included at every tier?
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <a href="features.html" class="btn btn-ghost">See all features</a>
+          <a href="docs.html" class="btn btn-ghost">Read the docs</a>
+        </div>
+      </section>
+    </main>
+
+    <footer id="dynamic-footer" class="mt-auto w-full"></footer>
+
+    <div id="modal-root" class="hidden fixed inset-0 z-[90]"></div>
+    <script type="module" src="../js/app.js"></script>
+  </body>
+</html>

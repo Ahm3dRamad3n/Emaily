@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Support — Emaily</title>
+    <meta
+      name="description"
+      content="Get help with Emaily: report a problem, suggest an improvement, browse the FAQ, or find the right documentation."
+    />
+    <link rel="icon" href="../assets/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["Sora", "ui-sans-serif", "system-ui", "sans-serif"],
+              body: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+              mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-local FAQ accordion polish — native <details>, no framework. */
+      .faq-item summary {
+        list-style: none;
+        cursor: pointer;
+      }
+      .faq-item summary::-webkit-details-marker {
+        display: none;
+      }
+      .faq-item .faq-icon {
+        transition: transform 160ms ease;
+      }
+      .faq-item[open] .faq-icon {
+        transform: rotate(45deg);
+      }
+    </style>
+  </head>
+  <body class="font-body min-h-screen flex flex-col" data-page="support">
+    <div
+      id="toast-container"
+      class="fixed top-4 right-4 z-[100] flex flex-col gap-2 items-end"
+    ></div>
+
+    <!-- ============================================================
+         HEADER
+         ============================================================ -->
+    <header class="glass sticky top-0 z-50" id="navbar-root"></header>
+
+    <main class="flex-1">
+      <!-- ============================================================
+           PAGE INTRO
+           ============================================================ -->
+      <section class="max-w-6xl mx-auto px-6 pt-16 pb-10 md:pt-20">
+        <div class="badge-pill mb-6"><span class="dot"></span> Support</div>
+        <h1
+          class="font-display text-4xl md:text-5xl font-extrabold leading-[1.1] tracking-tight mb-5"
+        >
+          How can we <span class="text-gradient-aurora">help?</span>
+        </h1>
+        <p class="text-lg text-secondary max-w-2xl leading-relaxed mb-8">
+          Something not working, or something you wish worked better? Tell us
+          below, check the FAQ for a quick answer, or jump straight to the
+          documentation.
+        </p>
+        <nav class="flex flex-wrap gap-3" aria-label="Support sections">
+          <a href="#complaint" class="btn btn-ghost btn-sm">Report a problem</a>
+          <a href="#suggestion" class="btn btn-ghost btn-sm"
+            >Suggest an improvement</a
+          >
+          <a href="#faq" class="btn btn-ghost btn-sm">FAQ</a>
+          <a href="#contact" class="btn btn-ghost btn-sm">Contact</a>
+        </nav>
+      </section>
+
+      <!-- ============================================================
+           A. SUBMIT A COMPLAINT
+           ============================================================ -->
+      <section
+        id="complaint"
+        class="max-w-6xl mx-auto px-6 py-12 scroll-mt-24"
+        aria-labelledby="complaint-title"
+      >
+        <div class="grid lg:grid-cols-[1fr_1.5fr] gap-10 items-start">
+          <div>
+            <p class="badge-pill mb-4">A</p>
+            <h2
+              id="complaint-title"
+              class="font-display text-3xl font-bold mb-4"
+            >
+              Submit a complaint
+            </h2>
+            <p class="text-secondary leading-relaxed mb-4">
+              If something broke, misbehaved, or just wasn't good enough, tell
+              us exactly what happened. The more detail, the faster it can be
+              understood.
+            </p>
+            <p class="text-tertiary text-sm leading-relaxed">
+              Helpful to include: the project ID, what you expected to happen,
+              what happened instead, and any error message you saw.
+            </p>
+          </div>
+
+          <div class="glass glass-panel p-6 md:p-8">
+            <form
+              id="complaint-form"
+              novalidate
+              class="space-y-5"
+              aria-describedby="complaint-note"
+            >
+              <p id="complaint-note" class="text-tertiary text-xs">
+                Fields marked * are required.
+              </p>
+
+              <div class="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <label class="field-label" for="c-name">Full name *</label>
+                  <input
+                    class="input-glass"
+                    id="c-name"
+                    name="name"
+                    type="text"
+                    autocomplete="name"
+                    placeholder="Sara Ahmed"
+                    required
+                    aria-describedby="c-name-error"
+                  />
+                  <p
+                    class="field-error hidden"
+                    id="c-name-error"
+                    data-error-for="c-name"
+                    role="alert"
+                  ></p>
+                </div>
+                <div>
+                  <label class="field-label" for="c-email"
+                    >Email address *</label
+                  >
+                  <input
+                    class="input-glass"
+                    id="c-email"
+                    name="email"
+                    type="email"
+                    autocomplete="email"
+                    placeholder="you&#64;example.com"
+                    required
+                    aria-describedby="c-email-error"
+                  />
+                  <p
+                    class="field-error hidden"
+                    id="c-email-error"
+                    data-error-for="c-email"
+                    role="alert"
+                  ></p>
+                </div>
+              </div>
+
+              <div class="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <label class="field-label" for="c-project"
+                    >Project ID
+                    <span class="text-tertiary font-normal"
+                      >(optional)</span
+                    ></label
+                  >
+                  <input
+                    class="input-glass font-mono"
+                    id="c-project"
+                    name="projectId"
+                    type="text"
+                    placeholder="p_xxxxxxxx"
+                    aria-describedby="c-project-hint c-project-error"
+                  />
+                  <p class="text-tertiary text-xs mt-1" id="c-project-hint">
+                    Project IDs start with <code class="font-mono">p_</code>.
+                  </p>
+                  <p
+                    class="field-error hidden"
+                    id="c-project-error"
+                    data-error-for="c-project"
+                    role="alert"
+                  ></p>
+                </div>
+                <div>
+                  <label class="field-label" for="c-category"
+                    >Complaint category *</label
+                  >
+                  <select
+                    class="input-glass"
+                    id="c-category"
+                    name="category"
+                    required
+                    aria-describedby="c-category-error"
+                  >
+                    <option value="">Select a category…</option>
+                    <option value="delivery">
+                      Email delivery or failed sends
+                    </option>
+                    <option value="service">
+                      Connecting a sending service
+                    </option>
+                    <option value="templates">Templates or attachments</option>
+                    <option value="keys">API keys or access modes</option>
+                    <option value="security">
+                      Bot protection or blocked requests
+                    </option>
+                    <option value="billing">Plan or billing</option>
+                    <option value="account">Account or sign-in</option>
+                    <option value="other">Something else</option>
+                  </select>
+                  <p
+                    class="field-error hidden"
+                    id="c-category-error"
+                    data-error-for="c-category"
+                    role="alert"
+                  ></p>
+                </div>
+              </div>
+
+              <div>
+                <label class="field-label" for="c-details"
+                  >Complaint details *</label
+                >
+                <textarea
+                  class="input-glass"
+                  id="c-details"
+                  name="details"
+                  rows="6"
+                  placeholder="What happened, and what did you expect instead?"
+                  required
+                  aria-describedby="c-details-error"
+                ></textarea>
+                <p
+                  class="field-error hidden"
+                  id="c-details-error"
+                  data-error-for="c-details"
+                  role="alert"
+                ></p>
+              </div>
+
+              <div class="glass p-4">
+                <p class="field-label mb-1" id="c-attach-label">
+                  Attachment
+                  <span class="text-tertiary font-normal">(optional)</span>
+                </p>
+                <input
+                  type="file"
+                  id="c-attach"
+                  class="input-glass"
+                  name="attachment"
+                  aria-labelledby="c-attach-label"
+                  aria-describedby="c-attach-note"
+                />
+              </div>
+
+              <div class="flex flex-wrap items-center gap-3">
+                <button type="submit" class="btn btn-aurora">
+                  Submit complaint
+                </button>
+                <button type="reset" class="btn btn-ghost">Clear form</button>
+              </div>
+            </form>
+
+            <div
+              id="complaint-success"
+              class="hidden text-center py-6"
+              role="status"
+              tabindex="-1"
+            >
+              <div
+                class="w-12 h-12 mx-auto mb-4 flex items-center justify-center"
+                style="background: var(--success-bg)"
+              >
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--success)"
+                  stroke-width="2.5"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <h3 class="font-display font-semibold text-lg mb-2">
+                Complaint submitted
+              </h3>
+              <p class="text-secondary text-sm leading-relaxed mb-2">
+                We'll review your complaint and get back to you as soon as
+                possible.
+              </p>
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm"
+                data-reset-form="complaint"
+              >
+                Submit another
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           B. SEND A SUGGESTION
+           ============================================================ -->
+      <section
+        id="suggestion"
+        class="max-w-6xl mx-auto px-6 py-12 scroll-mt-24"
+        aria-labelledby="suggestion-title"
+      >
+        <div class="grid lg:grid-cols-[1fr_1.5fr] gap-10 items-start">
+          <div>
+            <p class="badge-pill mb-4">B</p>
+            <h2
+              id="suggestion-title"
+              class="font-display text-3xl font-bold mb-4"
+            >
+              Send a suggestion
+            </h2>
+            <p class="text-secondary leading-relaxed mb-4">
+              Emaily is built for developers, so developers' ideas matter most.
+              Got a feature you'd love, a workflow that feels clumsy, or a docs
+              page that could be clearer? We'd genuinely like to hear it.
+            </p>
+            <p class="text-tertiary text-sm leading-relaxed">
+              Big or small, rough or polished — a half-formed idea is still
+              worth sharing.
+            </p>
+          </div>
+
+          <div class="glass glass-panel p-6 md:p-8">
+            <form
+              id="suggestion-form"
+              novalidate
+              class="space-y-5"
+              aria-describedby="suggestion-note"
+            >
+              <p id="suggestion-note" class="text-tertiary text-xs">
+                Fields marked * are required.
+              </p>
+
+              <div class="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <label class="field-label" for="s-name">Name *</label>
+                  <input
+                    class="input-glass"
+                    id="s-name"
+                    name="name"
+                    type="text"
+                    autocomplete="name"
+                    placeholder="Sara Ahmed"
+                    required
+                    aria-describedby="s-name-error"
+                  />
+                  <p
+                    class="field-error hidden"
+                    id="s-name-error"
+                    data-error-for="s-name"
+                    role="alert"
+                  ></p>
+                </div>
+                <div>
+                  <label class="field-label" for="s-email">Email *</label>
+                  <input
+                    class="input-glass"
+                    id="s-email"
+                    name="email"
+                    type="email"
+                    autocomplete="email"
+                    placeholder="you&#64;example.com"
+                    required
+                    aria-describedby="s-email-error"
+                  />
+                  <p
+                    class="field-error hidden"
+                    id="s-email-error"
+                    data-error-for="s-email"
+                    role="alert"
+                  ></p>
+                </div>
+              </div>
+
+              <div>
+                <label class="field-label" for="s-type"
+                  >Suggestion type *</label
+                >
+                <select
+                  class="input-glass"
+                  id="s-type"
+                  name="type"
+                  required
+                  aria-describedby="s-type-error"
+                >
+                  <option value="">Select a type…</option>
+                  <option value="feature">A new feature</option>
+                  <option value="improvement">
+                    An improvement to something that exists
+                  </option>
+                  <option value="integration">
+                    A new integration or provider
+                  </option>
+                  <option value="dx">Developer experience</option>
+                  <option value="docs">Documentation</option>
+                  <option value="other">Something else</option>
+                </select>
+                <p
+                  class="field-error hidden"
+                  id="s-type-error"
+                  data-error-for="s-type"
+                  role="alert"
+                ></p>
+              </div>
+
+              <div>
+                <label class="field-label" for="s-details"
+                  >Suggestion details *</label
+                >
+                <textarea
+                  class="input-glass"
+                  id="s-details"
+                  name="details"
+                  rows="5"
+                  placeholder="What would you like to see, and what problem would it solve?"
+                  required
+                  aria-describedby="s-details-error"
+                ></textarea>
+                <p
+                  class="field-error hidden"
+                  id="s-details-error"
+                  data-error-for="s-details"
+                  role="alert"
+                ></p>
+              </div>
+
+              <div>
+                <label class="field-label" for="s-impact"
+                  >Expected impact
+                  <span class="text-tertiary font-normal"
+                    >(optional)</span
+                  ></label
+                >
+                <textarea
+                  class="input-glass"
+                  id="s-impact"
+                  name="impact"
+                  rows="3"
+                  maxlength="500"
+                  placeholder="Who would this help, and how much?"
+                ></textarea>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-3">
+                <button type="submit" class="btn btn-aurora">
+                  Send suggestion
+                </button>
+                <button type="reset" class="btn btn-ghost">Clear form</button>
+              </div>
+            </form>
+
+            <div
+              id="suggestion-success"
+              class="hidden text-center py-6"
+              role="status"
+              tabindex="-1"
+            >
+              <div
+                class="w-12 h-12 mx-auto mb-4 flex items-center justify-center"
+                style="background: var(--success-bg)"
+              >
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--success)"
+                  stroke-width="2.5"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <h3 class="font-display font-semibold text-lg mb-2">
+                Thanks for the idea
+              </h3>
+              <p class="text-secondary text-sm leading-relaxed mb-2">
+                We'll review your suggestion and get back to you as soon as
+                possible.
+              </p>
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm"
+                data-reset-form="suggestion"
+              >
+                Send another
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           C. FAQ
+           ============================================================ -->
+      <section
+        id="faq"
+        class="max-w-4xl mx-auto px-6 py-12 scroll-mt-24"
+        aria-labelledby="faq-title"
+      >
+        <p class="badge-pill mb-4">C</p>
+        <h2 id="faq-title" class="font-display text-3xl font-bold mb-3">
+          Frequently asked questions
+        </h2>
+        <p class="text-secondary mb-6">
+          Quick answers to the questions that come up most.
+        </p>
+
+        <div class="mb-3">
+          <label class="field-label" for="faq-search">Search the FAQ</label>
+          <input
+            class="input-glass"
+            id="faq-search"
+            type="search"
+            placeholder="Try “OAuth”, “logs”, or “private key”…"
+            autocomplete="off"
+          />
+        </div>
+        <p
+          class="text-tertiary text-xs mb-6"
+          id="faq-count"
+          aria-live="polite"
+        ></p>
+
+        <div class="space-y-3" id="faq-list">
+          <details class="faq-item glass glass-card p-5">
+            <summary
+              class="flex items-center justify-between gap-4 font-semibold text-sm"
+            >
+              What is Emaily?
+              <span
+                class="faq-icon text-lg leading-none text-tertiary"
+                aria-hidden="true"
+                >+</span
+              >
+            </summary>
+            <p class="text-secondary text-sm leading-relaxed mt-4">
+              Emaily is a form-to-email backend-as-a-service. It lets you
+              receive form submissions — like contact forms — as emails without
+              running your own mail server. You connect an email account you
+              already own, design HTML templates with variable placeholders, and
+              submit data through one public API endpoint. Emaily then queues,
+              renders, secures, and delivers the email through your connected
+              account.
+            </p>
+          </details>
+
+          <details class="faq-item glass glass-card p-5">
+            <summary
+              class="flex items-center justify-between gap-4 font-semibold text-sm"
+            >
+              How does email routing work?
+              <span
+                class="faq-icon text-lg leading-none text-tertiary"
+                aria-hidden="true"
+                >+</span
+              >
+            </summary>
+            <div class="text-secondary text-sm leading-relaxed mt-4 space-y-3">
+              <p>
+                Your form or backend sends a request to
+                <code class="font-mono text-xs"
+                  >/api/submit/&#123;publicApiKey&#125;</code
+                >
+                with a template ID and the field values.
+              </p>
+              <p>
+                Emaily checks the request first — your project's access mode and
+                allowed domains, reCAPTCHA or App Check if the template uses
+                them, and rate limits. It then fills in the template's
+                <code class="font-mono text-xs"
+                  >&#123;&#123;variables&#125;&#125;</code
+                >, validates the resulting HTML, and queues the email for
+                background delivery through your connected service. Each
+                submission is recorded with a status such as Pending, Sent,
+                Failed, or Resent.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item glass glass-card p-5">
+            <summary
+              class="flex items-center justify-between gap-4 font-semibold text-sm"
+            >
+              Which providers are supported?
+              <span
+                class="faq-icon text-lg leading-none text-tertiary"
+                aria-hidden="true"
+                >+</span
+              >
+            </summary>
+            <div class="text-secondary text-sm leading-relaxed mt-4 space-y-3">
+              <ul class="list-disc pl-5 space-y-1">
+                <li><strong>Gmail</strong> — connected through OAuth.</li>
+                <li>
+                  <strong>Microsoft Outlook</strong> — connected through OAuth.
+                </li>
+                <li><strong>SendGrid</strong> — connected with an API key.</li>
+                <li><strong>Resend</strong> — connected with an API key.</li>
+                <li>
+                  <strong>Any SMTP account</strong> — connected with an app
+                  password.
+                </li>
+              </ul>
+              <p>
+                After a successful send, Emaily can also post Telegram alerts,
+                log to Google Sheets, and generate AI summaries.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item glass glass-card p-5">
+            <summary
+              class="flex items-center justify-between gap-4 font-semibold text-sm"
+            >
+              What is the difference between publicApiKey and privateKey?
+              <span
+                class="faq-icon text-lg leading-none text-tertiary"
+                aria-hidden="true"
+                >+</span
+              >
+            </summary>
+            <div class="text-secondary text-sm leading-relaxed mt-4 space-y-3">
+              <p>
+                Every project has a key pair. The
+                <strong>publicApiKey</strong> (starts with
+                <code class="font-mono text-xs">pub_</code>) goes in the request
+                URL and identifies the project. The
+                <strong>privateKey</strong> (starts with
+                <code class="font-mono text-xs">sec_</code>) goes in the request
+                body as <code class="font-mono text-xs">privateKey</code> and
+                authorizes backend requests — keep it out of client-side code.
+              </p>
+              <p>How they're used depends on the project's access mode:</p>
+              <ul class="list-disc pl-5 space-y-1">
+                <li>
+                  <strong>FrontendOnly</strong> — the private key must not be
+                  sent; the request's Origin must match your allowed domains.
+                </li>
+                <li>
+                  <strong>BackendOnly</strong> — the private key is required and
+                  must match.
+                </li>
+                <li>
+                  <strong>Hybrid</strong> — treated as a backend call when a
+                  valid private key is present and there's no Origin; otherwise
+                  the frontend rules apply.
+                </li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="faq-item glass glass-card p-5">
+            <summary
+              class="flex items-center justify-between gap-4 font-semibold text-sm"
+            >
+              How do I configure OAuth?
+              <span
+                class="faq-icon text-lg leading-none text-tertiary"
+                aria-hidden="true"
+                >+</span
+              >
+            </summary>
+            <div class="text-secondary text-sm leading-relaxed mt-4 space-y-3">
+              <p>
+                In your dashboard, add a sending service and choose the
+                <strong>OAuth</strong> option, then pick Google or Microsoft. A
+                popup opens with the provider's consent screen. Once you
+                approve, the popup closes and hands the authorization back to
+                Emaily.
+              </p>
+              <p>
+                Emaily requests send-only permission —
+                <code class="font-mono text-xs">gmail.send</code> for Google and
+                <code class="font-mono text-xs">Mail.Send</code>
+                for Microsoft — never full mailbox access, and stores the
+                resulting tokens encrypted. For a step-by-step walkthrough, see
+                the
+                <a href="docs.html" class="text-gradient-aurora font-semibold"
+                  >documentation</a
+                >.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item glass glass-card p-5">
+            <summary
+              class="flex items-center justify-between gap-4 font-semibold text-sm"
+            >
+              How can I inspect email logs?
+              <span
+                class="faq-icon text-lg leading-none text-tertiary"
+                aria-hidden="true"
+                >+</span
+              >
+            </summary>
+            <div class="text-secondary text-sm leading-relaxed mt-4 space-y-3">
+              <p>
+                Open <strong>History</strong> in your dashboard and choose a
+                project to see its submissions, each with a status. Opening a
+                submission shows its details, and failed submissions offer a
+                <strong>Retry send</strong> action.
+              </p>
+              <p>
+                One exception: if a template has
+                <strong>Save to history</strong>
+                switched off (privacy mode), its payload and rendered HTML are
+                never stored, so those submissions can't be inspected in detail
+                or retried.
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <p id="faq-empty" class="hidden text-secondary text-sm mt-6">
+          No questions match that search. Try a different word, or
+          <a href="#contact" class="text-gradient-aurora font-semibold"
+            >contact support</a
+          >.
+        </p>
+      </section>
+
+      <!-- ============================================================
+           D. CONTACT SUPPORT
+           ============================================================ -->
+      <section
+        id="contact"
+        class="max-w-6xl mx-auto px-6 py-12 pb-20 scroll-mt-24"
+        aria-labelledby="contact-title"
+      >
+        <p class="badge-pill mb-4">D</p>
+        <h2 id="contact-title" class="font-display text-3xl font-bold mb-3">
+          Contact support
+        </h2>
+        <p class="text-secondary mb-10 max-w-2xl">
+          Prefer to reach us directly, or need the technical docs first? Start
+          here.
+        </p>
+
+        <div class="grid sm:grid-cols-3 gap-5">
+          <a href="#complaint" class="glass glass-card p-6 block">
+            <h3 class="font-display font-semibold mb-2">Technical support</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-4">
+              Hit a problem? Report it with the details above.
+            </p>
+            <span class="text-gradient-aurora text-sm font-semibold"
+              >Report a problem →</span
+            >
+          </a>
+          <a href="docs.html" class="glass glass-card p-6 block">
+            <h3 class="font-display font-semibold mb-2">Documentation</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-4">
+              Set up a project, connect a service, and send your first email.
+            </p>
+            <span class="text-gradient-aurora text-sm font-semibold"
+              >Read the docs →</span
+            >
+          </a>
+          <a href="api-reference.html" class="glass glass-card p-6 block">
+            <h3 class="font-display font-semibold mb-2">API reference</h3>
+            <p class="text-secondary text-sm leading-relaxed mb-4">
+              Endpoints, request fields, and response shapes.
+            </p>
+            <span class="text-gradient-aurora text-sm font-semibold"
+              >Open the reference →</span
+            >
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer id="dynamic-footer" class="mt-auto w-full"></footer>
+
+    <div id="modal-root" class="hidden fixed inset-0 z-[90]"></div>
+    <script type="module" src="../js/app.js"></script>
+  </body>
+</html>

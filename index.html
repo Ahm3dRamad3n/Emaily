@@ -6,7 +6,7 @@
     <title>Emaily — Email API &amp; Routing Service</title>
     <meta
       name="description"
-      content="Emaily routes every email your app sends — submissions, templates, and delivery, behind one API key."
+      content="Emaily is a form-to-email backend-as-a-service. Connect your own Gmail, Outlook, SendGrid, Resend, or SMTP account, then route every submission through one API key — with templates, retries, delivery history, and enterprise-grade security built in."
     />
     <link rel="icon" href="assets/logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -31,181 +31,70 @@
     </script>
     <link rel="stylesheet" href="css/style.css" />
   </head>
-  <body class="font-body" data-page="landing">
+  <body class="font-body min-h-screen flex flex-col" data-page="landing">
     <div
       id="toast-container"
       class="fixed top-4 right-4 z-[100] flex flex-col gap-2 items-end"
     ></div>
 
-    <header class="glass sticky top-0 z-50">
-      <div
-        class="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between"
-      >
-        <a href="src/index.html" class="flex items-center gap-3">
-          <img
-            src="assets/logo.png"
-            alt="Emaily"
-            class="h-9 w-9 object-contain drop-shadow-[0_0_12px_rgba(139,92,246,0.55)]"
-          />
-          <span
-            class="font-display font-bold text-lg tracking-tight shimmer-text"
-            >Emaily</span
-          >
-        </a>
-        <nav class="hidden md:flex items-center gap-8">
-          <a href="#features" class="nav-link">Features</a>
-          <a href="#live-routing" class="nav-link">How it works</a>
-          <a href="#dev" class="nav-link">For developers</a>
-        </nav>
-        <div class="flex items-center gap-3">
-          <a href="src/login.html" class="btn btn-ghost btn-sm">Sign in</a>
-          <a href="src/register.html" class="btn btn-aurora btn-sm"
-            >Get your API key</a
-          >
-        </div>
-      </div>
-    </header>
+    <!-- ============================================================
+         HEADER
+         ============================================================ -->
+    <header class="glass sticky top-0 z-50" id="navbar-root"></header>
 
-    <main>
+    <main class="flex-1">
+      <!-- ============================================================
+           1. HERO
+           ============================================================ -->
       <section
-        class="relative max-w-7xl mx-auto px-6 pt-24 pb-20 overflow-hidden"
+        class="relative max-w-7xl mx-auto px-6 pt-20 pb-16 md:pt-24 md:pb-20"
       >
-        <div
-          class="aurora-glow-orb w-80 h-80 bg-violet-600/30 -top-20 -left-20"
-        ></div>
-        <div
-          class="aurora-glow-orb w-96 h-96 bg-cyan-500/20 top-40 right-0"
-        ></div>
-
         <div class="relative max-w-3xl">
           <div class="badge-pill mb-6">
             <span class="dot"></span> Email API &amp; Routing Engine
           </div>
           <h1
-            class="font-display text-5xl md:text-6xl font-extrabold leading-[1.05] tracking-tight mb-6"
+            class="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[1.05] tracking-tight mb-6"
           >
             Route every email
             <span class="text-gradient-aurora">your app sends.</span>
           </h1>
           <p class="text-lg text-secondary max-w-xl mb-9 leading-relaxed">
-            Emaily sits between your forms and your inbox. One API key handles
-            routing, templating, retries, and delivery history — so your backend
-            never has to think about SMTP again.
+            Emaily sits between your forms and your inbox. Connect your own
+            Gmail, Outlook, SendGrid, Resend, or SMTP account, then let one API
+            key handle routing, templating, retries, and delivery history — so
+            your backend never has to think about SMTP again.
           </p>
           <div class="flex flex-wrap items-center gap-4">
             <a href="src/register.html" class="btn btn-aurora"
               >Get your API key</a
             >
-            <a href="#live-routing" class="btn btn-ghost"
-              >See how routing works</a
-            >
-          </div>
-        </div>
-
-        <div id="features" class="relative grid md:grid-cols-3 gap-5 mt-16">
-          <div class="glass glass-card p-7">
-            <div
-              class="w-10 h-10 rounded-lg mb-5 flex items-center justify-center"
-              style="background: var(--aurora-gradient-soft)"
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="var(--aurora-cyan)"
-                stroke-width="2"
-              >
-                <path d="M3 11l18-8-8 18-2-8-8-2z" />
-              </svg>
-            </div>
-            <h3 class="font-display font-semibold text-lg mb-2">
-              Smart Routing
-            </h3>
-            <p class="text-secondary text-sm mb-6 leading-relaxed">
-              Every submission is matched to the right project, template, and
-              sending service automatically.
-            </p>
-            <a href="src/register.html" class="btn btn-ghost btn-sm"
-              >Explore routing</a
-            >
-          </div>
-          <div class="glass glass-card p-7">
-            <div
-              class="w-10 h-10 rounded-lg mb-5 flex items-center justify-center"
-              style="background: var(--aurora-gradient-soft)"
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="var(--aurora-cyan)"
-                stroke-width="2"
-              >
-                <rect x="3" y="4" width="18" height="16" rx="2" />
-                <path d="M3 8h18" />
-              </svg>
-            </div>
-            <h3 class="font-display font-semibold text-lg mb-2">
-              Instant Templates
-            </h3>
-            <p class="text-secondary text-sm mb-6 leading-relaxed">
-              Write HTML once, protect it with reCAPTCHA and domain checks, and
-              reuse it across submissions.
-            </p>
-            <a href="src/register.html" class="btn btn-ghost btn-sm"
-              >Build a template</a
-            >
-          </div>
-          <div class="glass glass-card p-7">
-            <div
-              class="w-10 h-10 rounded-lg mb-5 flex items-center justify-center"
-              style="background: var(--aurora-gradient-soft)"
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="var(--aurora-cyan)"
-                stroke-width="2"
-              >
-                <path d="M3 3v18h18" />
-                <path d="M18 9l-5 5-4-4-4 4" />
-              </svg>
-            </div>
-            <h3 class="font-display font-semibold text-lg mb-2">
-              Delivery Insights
-            </h3>
-            <p class="text-secondary text-sm mb-6 leading-relaxed">
-              See every submission's status, retry failures with one click, and
-              read an AI summary of what went wrong.
-            </p>
-            <a href="src/register.html" class="btn btn-ghost btn-sm"
-              >View delivery logs</a
-            >
+            <a href="#live-demo" class="btn btn-ghost">See how routing works</a>
           </div>
         </div>
       </section>
 
-      <section id="live-routing" class="max-w-5xl mx-auto px-6 py-10">
+      <!-- ============================================================
+           Live routing demonstration (hero's dashboard-style preview)
+           ============================================================ -->
+      <section id="live-demo" class="max-w-5xl mx-auto px-6 py-10">
         <div class="glass glass-panel p-8 md:p-10">
           <p class="badge-pill mb-6">The instant a form submits</p>
           <div class="grid md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
             <div class="code-block">
               <span class="tok-punc">{</span>
-              <span class="tok-key">"to"</span><span class="tok-punc">:</span>
-              <span class="tok-str">"sara&#64;example.com"</span
-              ><span class="tok-punc">,</span>
-              <span class="tok-key">"template"</span
+              <span class="tok-key">"templateId"</span
               ><span class="tok-punc">:</span>
-              <span class="tok-str">"contact-form"</span
+              <span class="tok-str">"t_contact_form"</span
               ><span class="tok-punc">,</span>
               <span class="tok-key">"fields"</span
-              ><span class="tok-punc">:</span> <span class="tok-punc">{</span>
+              ><span class="tok-punc">:</span>
+              <span class="tok-punc">{</span>
               <span class="tok-key">"name"</span><span class="tok-punc">:</span>
-              <span class="tok-str">"Sara"</span>
+              <span class="tok-str">"Sara"</span><span class="tok-punc">,</span>
+              <span class="tok-key">"message"</span
+              ><span class="tok-punc">:</span>
+              <span class="tok-str">"Hi!"</span>
               <span class="tok-punc">}</span>
               <span class="tok-punc">}</span>
             </div>
@@ -217,9 +106,9 @@
                 <div class="routing-dot"></div>
               </div>
             </div>
-            <div class="glass rounded-xl p-5 flex items-center gap-4">
+            <div class="glass rounded-none p-5 flex items-center gap-4">
               <div
-                class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                class="w-10 h-10 flex items-center justify-center shrink-0"
                 style="background: var(--success-bg)"
               >
                 <svg
@@ -234,33 +123,157 @@
                 </svg>
               </div>
               <div>
-                <p class="text-sm font-semibold">Delivered</p>
+                <p class="text-sm font-semibold">Sent</p>
                 <p class="text-tertiary text-xs font-mono">
-                  contact-form → smtp-primary
+                  contact-form → your connected service
                 </p>
               </div>
             </div>
           </div>
+          <p class="text-tertiary text-xs font-mono mt-6">
+            POST /api/submit/&#123;publicApiKey&#125;
+          </p>
         </div>
       </section>
 
-      <section class="max-w-6xl mx-auto px-6 py-20">
-        <h2 class="font-display text-3xl font-bold text-center mb-14">
-          Three steps, every time
+      <!-- ============================================================
+           2. TRUST & POSITIONING
+           ============================================================ -->
+      <section class="max-w-6xl mx-auto px-6 py-16 md:py-20">
+        <div class="max-w-2xl mb-12">
+          <h2 class="font-display text-3xl font-bold mb-4">
+            Built for people who'd rather ship than run a mail server
+          </h2>
+          <p class="text-secondary leading-relaxed">
+            Emaily is a form-to-email backend-as-a-service. You don't need your
+            own mail server, and you don't hand over your inbox to a third party
+            either — you connect an account you already own, and Emaily routes
+            through it.
+          </p>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold mb-2">
+              Students &amp; hobbyists
+            </h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              Learning how email APIs actually work, without standing up
+              infrastructure just to test a contact form.
+            </p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold mb-2">Indie developers</h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              Shipping side projects and MVPs that need reliable email without a
+              full-time ops budget.
+            </p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold mb-2">
+              Small teams &amp; agencies
+            </h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              Wiring contact and lead-capture forms into client sites, one
+              project and one API key per client.
+            </p>
+          </div>
+          <div class="glass glass-card p-6">
+            <h3 class="font-display font-semibold mb-2">Backend developers</h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              Who want email to be a utility they call, not infrastructure they
+              maintain, patch, and monitor.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           3. PROBLEM & SOLUTION
+           ============================================================ -->
+      <section class="max-w-6xl mx-auto px-6 py-16 md:py-20">
+        <h2 class="font-display text-3xl font-bold mb-12 max-w-2xl">
+          Running your own mail pipeline was never really optional. Now it is.
         </h2>
-        <div class="grid md:grid-cols-3 gap-8">
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="glass glass-card p-6">
+            <p class="badge-pill mb-4" style="color: var(--danger)">
+              The problem
+            </p>
+            <p class="text-secondary text-sm leading-relaxed mb-4">
+              Every sending provider has its own credentials, quirks, and
+              failure modes — and juggling more than one gets messy fast.
+            </p>
+            <p class="badge-pill mb-4">Emaily's answer</p>
+            <p class="text-secondary text-sm leading-relaxed">
+              Connect Gmail, Outlook, SendGrid, Resend, or any SMTP account
+              once. Emaily normalizes how you send, regardless of provider.
+            </p>
+          </div>
+          <div class="glass glass-card p-6">
+            <p class="badge-pill mb-4" style="color: var(--danger)">
+              The problem
+            </p>
+            <p class="text-secondary text-sm leading-relaxed mb-4">
+              Public form endpoints are a magnet for spam, scraping, and abuse
+              the moment they go live.
+            </p>
+            <p class="badge-pill mb-4">Emaily's answer</p>
+            <p class="text-secondary text-sm leading-relaxed">
+              Per-template reCAPTCHA v2 with hostname matching, App Check JWT
+              verification, rate limiting, and an escalating auto-ban system
+              keep abusive traffic out automatically.
+            </p>
+          </div>
+          <div class="glass glass-card p-6">
+            <p class="badge-pill mb-4" style="color: var(--danger)">
+              The problem
+            </p>
+            <p class="text-secondary text-sm leading-relaxed mb-4">
+              A failed send is usually a silent send — you find out from an
+              annoyed customer, not your logs.
+            </p>
+            <p class="badge-pill mb-4">Emaily's answer</p>
+            <p class="text-secondary text-sm leading-relaxed">
+              Every submission is recorded with status and error detail, and
+              failed sends can be retried in one click from your dashboard.
+            </p>
+          </div>
+          <div class="glass glass-card p-6">
+            <p class="badge-pill mb-4" style="color: var(--danger)">
+              The problem
+            </p>
+            <p class="text-secondary text-sm leading-relaxed mb-4">
+              Storing raw mail credentials next to your application code is a
+              liability if that code ever leaks.
+            </p>
+            <p class="badge-pill mb-4">Emaily's answer</p>
+            <p class="text-secondary text-sm leading-relaxed">
+              Connect through OAuth or an API key — every stored credential is
+              encrypted at rest with AES-256-GCM.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           4. HOW EMAILY WORKS
+           ============================================================ -->
+      <section id="how-it-works" class="max-w-6xl mx-auto px-6 py-16 md:py-20">
+        <h2 class="font-display text-3xl font-bold text-center mb-14">
+          Four steps, every time
+        </h2>
+        <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
           <div>
             <span
               class="font-display text-5xl font-extrabold text-gradient-aurora"
               >01</span
             >
-            <h3 class="font-display font-semibold text-lg mt-3 mb-2">Submit</h3>
+            <h3 class="font-display font-semibold text-lg mt-3 mb-2">
+              Connect a service
+            </h3>
             <p class="text-secondary text-sm leading-relaxed">
-              Your form posts to
-              <code class="font-mono text-xs"
-                >/api/submit/{'{'}publicApiKey{'}'}</code
-              >. Emaily checks the domain, CAPTCHA, and rate limits before it
-              accepts anything.
+              Authorize Gmail or Outlook through OAuth, or add an API key
+              (SendGrid, Resend) or SMTP app password.
             </p>
           </div>
           <div>
@@ -268,10 +281,14 @@
               class="font-display text-5xl font-extrabold text-gradient-aurora"
               >02</span
             >
-            <h3 class="font-display font-semibold text-lg mt-3 mb-2">Route</h3>
+            <h3 class="font-display font-semibold text-lg mt-3 mb-2">
+              Configure a project
+            </h3>
             <p class="text-secondary text-sm leading-relaxed">
-              The submission is queued, matched to a template and a sending
-              service, and picked up for delivery.
+              Get a public/private key pair, write an HTML template with
+              <code class="font-mono text-xs"
+                >&#123;&#123;variables&#125;&#125;</code
+              >, and choose an access mode.
             </p>
           </div>
           <div>
@@ -279,26 +296,425 @@
               class="font-display text-5xl font-extrabold text-gradient-aurora"
               >03</span
             >
+            <h3 class="font-display font-semibold text-lg mt-3 mb-2">Submit</h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              Your form or backend posts to
+              <code class="font-mono text-xs"
+                >/api/submit/&#123;publicApiKey&#125;</code
+              >. Emaily checks domain, CAPTCHA, App Check, and rate limits
+              first.
+            </p>
+          </div>
+          <div>
+            <span
+              class="font-display text-5xl font-extrabold text-gradient-aurora"
+              >04</span
+            >
             <h3 class="font-display font-semibold text-lg mt-3 mb-2">
-              Deliver
+              Trace &amp; retry
             </h3>
             <p class="text-secondary text-sm leading-relaxed">
-              You get a delivery record with status and history. Failed sends
-              can be retried in one click from your dashboard.
+              The send is queued, delivered, and logged with status — failures
+              are visible and retryable, never silent.
             </p>
           </div>
         </div>
       </section>
 
-      <section id="dev" class="max-w-5xl mx-auto px-6 py-10">
+      <!-- ============================================================
+           5. CORE CAPABILITIES
+           ============================================================ -->
+      <section id="features" class="max-w-6xl mx-auto px-6 py-16 md:py-20">
+        <h2 class="font-display text-3xl font-bold mb-12 max-w-2xl">
+          Everything a routing layer for email should do
+        </h2>
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
+          <div class="glass glass-card p-7">
+            <div
+              class="w-10 h-10 mb-5 flex items-center justify-center"
+              style="background: var(--aurora-gradient-soft)"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--aurora-cyan)"
+                stroke-width="2"
+              >
+                <path d="M3 11l18-8-8 18-2-8-8-2z" />
+              </svg>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2">
+              Provider routing
+            </h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              Send through Gmail, Outlook, SendGrid, Resend, or any SMTP account
+              with an app password — pick per project, per template.
+            </p>
+          </div>
+          <div class="glass glass-card p-7">
+            <div
+              class="w-10 h-10 mb-5 flex items-center justify-center"
+              style="background: var(--aurora-gradient-soft)"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--aurora-cyan)"
+                stroke-width="2"
+              >
+                <path
+                  d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"
+                />
+              </svg>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2">Security</h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              Dual API-key access modes, AES-256-GCM encrypted credentials, and
+              an auto-ban system that escalates from minutes to weeks.
+            </p>
+          </div>
+          <div class="glass glass-card p-7">
+            <div
+              class="w-10 h-10 mb-5 flex items-center justify-center"
+              style="background: var(--aurora-gradient-soft)"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--aurora-cyan)"
+                stroke-width="2"
+              >
+                <rect x="3" y="4" width="18" height="16" rx="0" />
+                <path d="M3 8h18" />
+              </svg>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2">Templates</h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              HTML templates with variable placeholders, per-form reCAPTCHA/App
+              Check, attachments, and auto-reply chaining.
+            </p>
+          </div>
+          <div class="glass glass-card p-7">
+            <div
+              class="w-10 h-10 mb-5 flex items-center justify-center"
+              style="background: var(--aurora-gradient-soft)"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--aurora-cyan)"
+                stroke-width="2"
+              >
+                <path d="M3 3v18h18" />
+                <path d="M18 9l-5 5-4-4-4 4" />
+              </svg>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2">Logs</h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              Every submission is tracked from Pending through Sent, Failed, or
+              Resent, with error detail and one-click retry.
+            </p>
+          </div>
+          <div class="glass glass-card p-7">
+            <div
+              class="w-10 h-10 mb-5 flex items-center justify-center"
+              style="background: var(--aurora-gradient-soft)"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--aurora-cyan)"
+                stroke-width="2"
+              >
+                <polyline points="16 18 22 12 16 6" />
+                <polyline points="8 6 2 12 8 18" />
+              </svg>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2">
+              Developer experience
+            </h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              One endpoint, no SDK to install. cURL it, fetch() it, or call it
+              from any backend that can make an HTTP request.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           6. INTEGRATIONS
+           ============================================================ -->
+      <section class="max-w-6xl mx-auto px-6 py-16 md:py-20">
+        <h2 class="font-display text-3xl font-bold mb-3">
+          Connect what you already use
+        </h2>
+        <p class="text-secondary max-w-2xl mb-10">
+          Emaily doesn't send email on its own behalf — it sends through an
+          account you connect and control.
+        </p>
+
+        <p class="badge-pill mb-5">Sending providers</p>
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-12">
+          <div class="glass glass-card p-5 flex items-center gap-3">
+            <span class="status-pill is-neutral font-mono">OAuth</span>
+            <span class="text-sm font-semibold">Gmail</span>
+          </div>
+          <div class="glass glass-card p-5 flex items-center gap-3">
+            <span class="status-pill is-neutral font-mono">OAuth</span>
+            <span class="text-sm font-semibold">Microsoft Outlook</span>
+          </div>
+          <div class="glass glass-card p-5 flex items-center gap-3">
+            <span class="status-pill is-neutral font-mono">API key</span>
+            <span class="text-sm font-semibold">SendGrid</span>
+          </div>
+          <div class="glass glass-card p-5 flex items-center gap-3">
+            <span class="status-pill is-neutral font-mono">API key</span>
+            <span class="text-sm font-semibold">Resend</span>
+          </div>
+          <div class="glass glass-card p-5 flex items-center gap-3">
+            <span class="status-pill is-neutral font-mono">App Password</span>
+            <span class="text-sm font-semibold">Any SMTP account</span>
+          </div>
+        </div>
+
+        <p class="badge-pill mb-5">Automations, after a successful send</p>
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="glass glass-card p-5">
+            <h3 class="font-semibold text-sm mb-1">Telegram alerts</h3>
+            <p class="text-tertiary text-xs leading-relaxed">
+              Delivery-status notifications sent straight to a Telegram chat.
+            </p>
+          </div>
+          <div class="glass glass-card p-5">
+            <h3 class="font-semibold text-sm mb-1">Google Sheets logging</h3>
+            <p class="text-tertiary text-xs leading-relaxed">
+              Appends a row per submission — timestamp, project, recipient,
+              subject, and status — to a sheet you point it at.
+            </p>
+          </div>
+          <div class="glass glass-card p-5">
+            <h3 class="font-semibold text-sm mb-1">AI summaries</h3>
+            <p class="text-tertiary text-xs leading-relaxed">
+              A bullet-point summary of each email, generated after delivery.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           7. SECURITY
+           ============================================================ -->
+      <section id="security" class="max-w-6xl mx-auto px-6 py-16 md:py-20">
+        <div class="max-w-2xl mb-12">
+          <h2 class="font-display text-3xl font-bold mb-4">
+            More security than a contact-form backend usually gets
+          </h2>
+          <p class="text-secondary leading-relaxed">
+            Nothing here is exaggerated — this is what actually runs behind
+            every submission.
+          </p>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="glass glass-card p-5 flex gap-4">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--success)"
+              stroke-width="2.5"
+              class="shrink-0 mt-0.5"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <div>
+              <h3 class="font-semibold text-sm mb-1">Encrypted credentials</h3>
+              <p class="text-tertiary text-xs leading-relaxed">
+                AES-256-GCM authenticated encryption for every stored service
+                credential.
+              </p>
+            </div>
+          </div>
+          <div class="glass glass-card p-5 flex gap-4">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--success)"
+              stroke-width="2.5"
+              class="shrink-0 mt-0.5"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <div>
+              <h3 class="font-semibold text-sm mb-1">Purpose-scoped JWTs</h3>
+              <p class="text-tertiary text-xs leading-relaxed">
+                HS256 access tokens carry a dedicated login-purpose claim, so
+                reset or verification tokens can never be reused as a session.
+              </p>
+            </div>
+          </div>
+          <div class="glass glass-card p-5 flex gap-4">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--success)"
+              stroke-width="2.5"
+              class="shrink-0 mt-0.5"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <div>
+              <h3 class="font-semibold text-sm mb-1">Short-lived sessions</h3>
+              <p class="text-tertiary text-xs leading-relaxed">
+                10-minute access tokens, 7-day rotating refresh tokens, and
+                immediate logout blacklisting.
+              </p>
+            </div>
+          </div>
+          <div class="glass glass-card p-5 flex gap-4">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--success)"
+              stroke-width="2.5"
+              class="shrink-0 mt-0.5"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <div>
+              <h3 class="font-semibold text-sm mb-1">
+                Minimal-permission OAuth
+              </h3>
+              <p class="text-tertiary text-xs leading-relaxed">
+                Gmail uses only the
+                <code class="font-mono">gmail.send</code> scope; Microsoft uses
+                only <code class="font-mono">Mail.Send</code>
+                — never full mailbox access.
+              </p>
+            </div>
+          </div>
+          <div class="glass glass-card p-5 flex gap-4">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--success)"
+              stroke-width="2.5"
+              class="shrink-0 mt-0.5"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <div>
+              <h3 class="font-semibold text-sm mb-1">
+                Per-form bot protection
+              </h3>
+              <p class="text-tertiary text-xs leading-relaxed">
+                Optional reCAPTCHA v2 with hostname matching, plus App Check JWT
+                verification with an optional expected issuer.
+              </p>
+            </div>
+          </div>
+          <div class="glass glass-card p-5 flex gap-4">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--success)"
+              stroke-width="2.5"
+              class="shrink-0 mt-0.5"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <div>
+              <h3 class="font-semibold text-sm mb-1">Dual-key access modes</h3>
+              <p class="text-tertiary text-xs leading-relaxed">
+                FrontendOnly, BackendOnly, or Hybrid — you decide whether a
+                public key alone is enough, or a private key is required.
+              </p>
+            </div>
+          </div>
+          <div class="glass glass-card p-5 flex gap-4">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--success)"
+              stroke-width="2.5"
+              class="shrink-0 mt-0.5"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <div>
+              <h3 class="font-semibold text-sm mb-1">Escalating auto-ban</h3>
+              <p class="text-tertiary text-xs leading-relaxed">
+                Abusive IPs are banned automatically, escalating from 1 minute
+                up to 30 days, logged with reason and endpoint.
+              </p>
+            </div>
+          </div>
+          <div class="glass glass-card p-5 flex gap-4">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--success)"
+              stroke-width="2.5"
+              class="shrink-0 mt-0.5"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <div>
+              <h3 class="font-semibold text-sm mb-1">HTML safety check</h3>
+              <p class="text-tertiary text-xs leading-relaxed">
+                After variable substitution, every email body is validated by an
+                HTML sanitizer — unsafe content is rejected before anything is
+                sent.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           8. DEVELOPER EXPERIENCE
+           ============================================================ -->
+      <section id="dev" class="max-w-5xl mx-auto px-6 py-16 md:py-20">
         <div class="grid md:grid-cols-2 gap-10 items-center">
           <div>
             <h2 class="font-display text-3xl font-bold mb-4">
               Built for the backend you already have
             </h2>
+            <p class="text-secondary leading-relaxed mb-4">
+              No SDK to install. Point any form, or your own backend, at a
+              project's public key and Emaily takes it from there.
+            </p>
             <p class="text-secondary leading-relaxed mb-6">
-              No SDK to install. Point any form or server at your project's
-              public key and Emaily takes it from there.
+              <code class="font-mono text-sm">publicApiKey</code> lives in the
+              URL and identifies the project.
+              <code class="font-mono text-sm">privateKey</code>, when your
+              access mode requires it, travels in the request body and proves
+              the call came from your backend — never expose it in client-side
+              code.
             </p>
             <a href="src/register.html" class="btn btn-aurora"
               >Create a project</a
@@ -306,36 +722,120 @@
           </div>
           <div class="code-block">
             <span class="tok-punc">curl -X POST \</span>
-            https://api.emaily.dev/api/submit/pk_live_9f2a \ -H
+            https://your-api.example.com/api/submit/pub_9f2a... \ -H
             <span class="tok-str">"Content-Type: application/json"</span> \ -d
-            <span class="tok-str">'{"name":"Sara","message":"Hi!"}'</span>
+            <span class="tok-str"
+              >'{"templateId":"t_contact_form","privateKey":"sec_...","fields":{"name":"Sara","message":"Hi!"}}'</span
+            >
           </div>
         </div>
       </section>
 
-      <section class="max-w-5xl mx-auto px-6 py-24 text-center">
-        <div class="glass glass-panel px-8 py-14 relative overflow-hidden">
+      <!-- ============================================================
+           9. PRICING PREVIEW
+           ============================================================ -->
+      <section class="max-w-6xl mx-auto px-6 py-16 md:py-20">
+        <h2 class="font-display text-3xl font-bold text-center mb-3">
+          Pricing that starts free
+        </h2>
+        <p class="text-secondary text-center max-w-xl mx-auto mb-12">
+          Start on the free tier, upgrade when your volume and workflow need it.
+        </p>
+        <div class="grid md:grid-cols-3 gap-5 mb-10">
+          <div class="glass glass-card p-7">
+            <h3 class="font-display font-semibold text-lg mb-2">
+              Student &amp; Hobbyist
+            </h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              For learning email APIs, side projects, and testing — no cost to
+              get started.
+            </p>
+          </div>
           <div
-            class="aurora-glow-orb w-72 h-72 bg-cyan-500/20 -bottom-24 -right-10"
-          ></div>
-          <h2 class="relative font-display text-3xl md:text-4xl font-bold mb-4">
+            class="glass glass-card p-7"
+            style="border-color: var(--aurora-purple); border-style: solid"
+          >
+            <p class="badge-pill mb-3">Recommended</p>
+            <h3 class="font-display font-semibold text-lg mb-2">Pro</h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              For production applications with higher volume, custom
+              integrations, and deeper logs.
+            </p>
+          </div>
+          <div class="glass glass-card p-7">
+            <h3 class="font-display font-semibold text-lg mb-2">Enterprise</h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              For large organizations that need unlimited projects and dedicated
+              support.
+            </p>
+          </div>
+        </div>
+        <div class="text-center">
+          <a href="app/pricing.html" class="btn btn-ghost"
+            >See full pricing &amp; limits</a
+          >
+        </div>
+      </section>
+
+      <!-- ============================================================
+           10. DOCUMENTATION & SUPPORT
+           ============================================================ -->
+      <section class="max-w-6xl mx-auto px-6 py-16 md:py-20">
+        <h2 class="font-display text-3xl font-bold text-center mb-12">
+          Find your way around
+        </h2>
+        <div class="grid sm:grid-cols-3 gap-5">
+          <a href="app/docs.html" class="glass glass-card p-7 block">
+            <h3 class="font-display font-semibold text-lg mb-2">
+              Documentation
+            </h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              Step-by-step setup, from connecting a service to tracing a
+              submission.
+            </p>
+          </a>
+          <a href="app/api-reference.html" class="glass glass-card p-7 block">
+            <h3 class="font-display font-semibold text-lg mb-2">
+              API Reference
+            </h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              Every endpoint, request field, and response shape, laid out
+              clearly.
+            </p>
+          </a>
+          <a href="app/support.html" class="glass glass-card p-7 block">
+            <h3 class="font-display font-semibold text-lg mb-2">Support</h3>
+            <p class="text-secondary text-sm leading-relaxed">
+              File a complaint, send a suggestion, or find answers in the FAQ.
+            </p>
+          </a>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           11. FINAL CTA
+           ============================================================ -->
+      <section class="max-w-5xl mx-auto px-6 py-20 md:py-24 text-center">
+        <div class="glass glass-panel px-8 py-14">
+          <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">
             Stop babysitting SMTP.
           </h2>
-          <p class="relative text-secondary mb-8 max-w-md mx-auto">
+          <p class="text-secondary mb-8 max-w-md mx-auto">
             Get an API key, wire up one endpoint, and let Emaily route the rest.
           </p>
-          <a
-            href="src/register.html"
-            class="relative btn btn-aurora inline-flex"
+          <a href="src/register.html" class="btn btn-aurora inline-flex"
             >Get your API key</a
           >
         </div>
       </section>
     </main>
 
+    <!-- ============================================================
+         12. FOOTER
+         ============================================================ -->
     <footer id="dynamic-footer" class="mt-auto w-full"></footer>
 
     <div id="modal-root" class="hidden fixed inset-0 z-[90]"></div>
-    <script type="module" src="js/app.js"></script>
+    <script type="module" src="../js/app.js"></script>
   </body>
 </html>
