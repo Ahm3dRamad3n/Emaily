@@ -2932,6 +2932,7 @@ async function openCodeSnippetModal(t) {
 }
 
 function openTestModal(template, project) {
+  const submitUrl = `${BASE_URL}/submit/${project?.publicApiKey || "YOUR_PUBLIC_KEY"}`;
   const varRegex = /\{\{\s*([^}]+)\s*\}\}/g;
   const combinedText =
     (template.subject || "") +
@@ -3011,19 +3012,20 @@ function openTestModal(template, project) {
       responseContainer.classList.add("hidden");
 
       try {
-        // التحقق من صحة الـ JSON
         const reqBody = JSON.parse(payloadText);
 
-        // إرسال الطلب الفعلي
         const res = await SubmissionService.submit(
           project?.publicApiKey,
           reqBody,
         );
 
-        // عرض الرد
         responseContainer.classList.remove("hidden");
-        responseStatus.textContent = `Status: ${res.status} ${res.statusText}`;
-        responseStatus.style.color = res.ok
+
+        const isSuccess = res.status === "Success";
+
+        responseStatus.textContent = `Status: ${res.status || "Completed"}`;
+
+        responseStatus.style.color = isSuccess
           ? "var(--success)"
           : "var(--danger)";
 
