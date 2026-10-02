@@ -298,7 +298,7 @@ function getPublicNavbarHTML() {
         <div class="flex items-center gap-3">
           <a
             href="${urlFor("login")}"
-            class="btn btn-ghost btn-sm hidden sm:inline-flex"
+            class="btn btn-ghost btn-sm hidden sm:!inline-flex"
             >Sign in</a
           >
           <a href="${urlFor("register")}" class="btn btn-aurora btn-sm"
@@ -365,7 +365,7 @@ function getDashboardNavbarHTML(user) {
     <div id="beta-banner" class="relative z-50 flex items-center justify-center gap-3 px-4 py-2.5 transition-all duration-300" style="background-color: var(--bg-void); border-bottom: 1px dashed var(--warning);">
       
       <!-- أيقونة برمجية/هندسية (Code/Terminal) -->
-      <svg class="hidden sm:block w-4 h-4 shrink-0" style="color: var(--warning);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg class="hidden sm:!block w-4 h-4 shrink-0" style="color: var(--warning);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
       </svg>
       
@@ -373,7 +373,7 @@ function getDashboardNavbarHTML(user) {
       <p class="text-xs sm:text-sm font-medium pr-8 sm:pr-0 flex items-center flex-wrap justify-center gap-1.5" style="color: var(--text-primary); font-family: var(--font-mono);">
         <span class="inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none" style="background-color: var(--warning); color: var(--text-on-aurora);">[ BETA ]</span>
         <span style="color: var(--text-secondary);">System in active development. Found an anomaly or have a suggestion?</span>
-        <a href="/support" class="inline-flex items-center transition-colors hover:opacity-80 underline decoration-1 underline-offset-4" style="color: var(--warning); text-decoration-color: var(--warning);">
+        <a href="/app/support.html" class="inline-flex items-center transition-colors hover:opacity-80 underline decoration-1 underline-offset-4" style="color: var(--warning); text-decoration-color: var(--warning);">
           Report to engineering <span class="ml-1 text-lg leading-none">&rarr;</span>
         </a>
       </p>
@@ -544,7 +544,7 @@ function getDashboardFooterHTML() {
           <img src="${assetPath("logo.png")}" alt="Emaily" class="h-5 w-5 object-contain opacity-80" />
           <span class="font-display font-semibold text-sm text-secondary">Emaily</span>
         </div>
-        <p class="text-tertiary text-xs hidden sm:block">
+        <p class="text-tertiary text-xs hidden sm:!block">
           © 2026 Emaily. Email API & routing for developers.
         </p>
       </div>
@@ -906,7 +906,7 @@ async function initRegisterPage() {
             type="text"
             id="register-name"
             name="name"
-            placeholder="Sara Ahmed"
+            placeholder="Ahmed Ramadan"
             required
           />
         </div>
@@ -2782,7 +2782,7 @@ function buildSnippets(template, project) {
 
   const fieldsObj = {};
   if (uniqueVars.length === 0) {
-    fieldsObj["name"] = "Sara";
+    fieldsObj["name"] = "Ahmed";
     fieldsObj["message"] = "Hello!";
   } else {
     uniqueVars.forEach((v, index) => {
@@ -2942,7 +2942,7 @@ function openTestModal(template, project) {
 
   const fieldsObj = {};
   if (uniqueVars.length === 0) {
-    fieldsObj["name"] = "Sara";
+    fieldsObj["name"] = "Ahmed";
     fieldsObj["message"] = "Hello!";
   } else {
     uniqueVars.forEach((v, index) => {
@@ -4612,7 +4612,7 @@ function paginationHTML(currentPage, totalPages, scope = "", extraAttrs = "") {
       </div>
       
       <!-- فاصل عمودي -->
-      <div class="w-px h-5 bg-white/10 hidden sm:block"></div>
+      <div class="w-px h-5 bg-white/10 hidden sm:!block"></div>
       
       <!-- قسم الانتقال لصفحة مخصصة -->
       <div class="flex items-center gap-2">
@@ -6099,26 +6099,6 @@ const PUBLIC_ONLY_PAGE_INIT = {
   terms: initTermsPage,
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const page = document.body.dataset.page;
-
-  if (PUBLIC_ONLY_PAGE_INIT[page]) {
-    renderNavbar(null);
-    renderFooter(true);
-    await PUBLIC_ONLY_PAGE_INIT[page]();
-    return;
-  }
-
-  const user = await mountAppShell(page);
-  if (!user) return; // mountAppShell already redirected
-
-  renderNavbar(user);
-  renderFooter(false);
-
-  const init = PAGE_INIT[page];
-  if (init) await init(user);
-});
-
 /* ============================================================
    Custom confirm() replacement
    ============================================================ */
@@ -6151,3 +6131,44 @@ window.confirm = function (htmlMessage) {
     });
   });
 };
+
+/* ============================================================
+    Google Analytics
+    ============================================================ */
+(function initGoogleAnalytics() {
+  // 1. Create the async script tag for the Google Tag Manager
+  const script = document.createElement("script");
+  script.async = true;
+  script.src = "https://www.googletagmanager.com/gtag/js?id=G-2C5RFCVWX8";
+  document.head.appendChild(script);
+
+  // 2. Initialize the dataLayer and configuration
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    window.dataLayer.push(arguments);
+  }
+  window.gtag = gtag; // Make gtag accessible globally just in case
+
+  gtag("js", new Date());
+  gtag("config", "G-2C5RFCVWX8");
+})();
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const page = document.body.dataset.page;
+
+  if (PUBLIC_ONLY_PAGE_INIT[page]) {
+    renderNavbar(null);
+    renderFooter(true);
+    await PUBLIC_ONLY_PAGE_INIT[page]();
+    return;
+  }
+
+  const user = await mountAppShell(page);
+  if (!user) return; // mountAppShell already redirected
+
+  renderNavbar(user);
+  renderFooter(false);
+
+  const init = PAGE_INIT[page];
+  if (init) await init(user);
+});

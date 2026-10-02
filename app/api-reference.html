@@ -217,7 +217,7 @@
                 <div class="code-block mb-4">
                   &#123;
                   <span class="tok-key">"email"</span>:
-                  <span class="tok-str">"sara&#64;example.com"</span>,
+                  <span class="tok-str">"Ahmed&#64;example.com"</span>,
                   <span class="tok-key">"password"</span>:
                   <span class="tok-str">"••••••••"</span>,
                   <span class="tok-key">"verificationToken"</span>:
@@ -248,7 +248,7 @@
                 <div class="code-block mb-4">
                   &#123;
                   <span class="tok-key">"email"</span>:
-                  <span class="tok-str">"sara&#64;example.com"</span>,
+                  <span class="tok-str">"Ahmed&#64;example.com"</span>,
                   <span class="tok-key">"password"</span>:
                   <span class="tok-str">"••••••••"</span>
                   &#125;
@@ -444,13 +444,13 @@
 curl -X POST \
   https://BASE-URL/submit/pub_9f2a... \
   -H "Content-Type: application/json" \
-  -d '{"templateId":"t_contact_form","fields":{"name":"Sara","message":"Hi!"}}'</pre
+  -d '{"templateId":"t_contact_form","fields":{"name":"Ahmed","message":"Hi!"}}'</pre
                   >
                   <button
                     type="button"
                     class="copy-btn mt-2"
                     data-action="copy-text"
-                    data-copy='curl -X POST https://BASE-URL/submit/pub_9f2a... -H "Content-Type: application/json" -d "{\"templateId\":\"t_contact_form\",\"fields\":{\"name\":\"Sara\",\"message\":\"Hi!\"}}"'
+                    data-copy='curl -X POST https://BASE-URL/submit/pub_9f2a... -H "Content-Type: application/json" -d "{\"templateId\":\"t_contact_form\",\"fields\":{\"name\":\"Ahmed\",\"message\":\"Hi!\"}}"'
                   >
                     Copy snippet
                   </button>
@@ -462,7 +462,7 @@ fetch("https://BASE-URL/submit/pub_9f2a...", {
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     templateId: "t_contact_form",
-    fields: { name: "Sara", message: "Hi!" }
+    fields: { name: "Ahmed", message: "Hi!" }
   })
 })
   .then((res) => res.json())
@@ -472,7 +472,7 @@ fetch("https://BASE-URL/submit/pub_9f2a...", {
                     type="button"
                     class="copy-btn mt-2"
                     data-action="copy-text"
-                    data-copy='fetch("https://BASE-URL/submit/pub_9f2a...", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ templateId: "t_contact_form", fields: { name: "Sara", message: "Hi!" } }) }).then((res) => res.json()).then((data) => console.log(data));'
+                    data-copy='fetch("https://BASE-URL/submit/pub_9f2a...", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ templateId: "t_contact_form", fields: { name: "Ahmed", message: "Hi!" } }) }).then((res) => res.json()).then((data) => console.log(data));'
                   >
                     Copy snippet
                   </button>
