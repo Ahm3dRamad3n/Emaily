@@ -1321,6 +1321,9 @@ async function renderCard(scope, dto, operation = "create") {
     if (scope === "service") {
       const services = await ServiceService.list().catch(() => []);
       $("#services-list").innerHTML = servicesListHTML(services);
+    } else if (scope === "project") {
+      const projects = await ProjectService.list().catch(() => []);
+      $("#projects-list").innerHTML = projectsListHTML(projects);
     } else if (scope === "integration") {
       const integrations = await IntegrationService.list(dto.projectId).catch(
         () => [],
@@ -1592,7 +1595,7 @@ function openProjectModal() {
 
 async function submitProject() {
   const name = $("#project-name").value.trim();
-  const domainsRaw = $("#project-domains").value.trim();
+  const domainsRaw = $("#project-domains").value.trim() || null;
   if (!name) return showToast("Give the project a name.", "error");
   try {
     const project = await ProjectService.create({
@@ -1928,7 +1931,7 @@ function renderSettingsTab(project) {
 }
 
 async function saveProjectSettings(projectId) {
-  const domainsRaw = $("#settings-domains").value.trim();
+  const domainsRaw = $("#settings-domains").value.trim() || null;
   try {
     const project = await ProjectService.update(projectId, {
       name: $("#settings-name").value.trim(),
@@ -3111,7 +3114,10 @@ async function templateEditorHTML({
   const isOn = t.isActive !== false;
 
   const issuers = [
-    { name: "Firebase (Symmetric)", value: "Firebase" },
+    {
+      name: "Firebase App Check",
+      value: "https://firebaseappcheck.googleapis.com",
+    },
     { name: "Auth0", value: "https://auth0.com" },
     { name: "AWS Cognito", value: "https://cognito-idp.amazonaws.com" },
     { name: "Supabase", value: "https://supabase.co" },
@@ -3194,9 +3200,9 @@ The resend option for the template will be disabled.</label></div>
                     </div>
                 </div>
 
-                <!-- reCAPTCHA v2 -->
+                <!-- Google reCAPTCHA (v2 & v3) -->
                 <div class="border-b border-white/10 pb-5">
-                    <label class="flex items-center gap-2 text-sm font-medium mb-3"><input type="checkbox" class="checkbox-glass" id="tpl-recaptcha" ${t.enableRecaptchaV2 ? "checked" : ""} onchange="document.getElementById('tpl-recaptcha-secret-key').disabled = !this.checked;" /> reCAPTCHA v2</label>
+                    <label class="flex items-center gap-2 text-sm font-medium mb-3"><input type="checkbox" class="checkbox-glass" id="tpl-recaptcha" ${t.enableRecaptchaV2 ? "checked" : ""} onchange="document.getElementById('tpl-recaptcha-secret-key').disabled = !this.checked;" />Google reCAPTCHA (v2 & v3)</label>
                     <div class="pl-6">
                         <label class="field-label">reCAPTCHA Secret Key</label>
                         <input class="input-glass font-mono disabled:opacity-50 disabled:cursor-not-allowed transition" id="tpl-recaptcha-secret-key" value="${escapeHtml(t.recaptchaSecretKey || "")}" placeholder="6Lxxxxxxxxxxxxxxxxxxxxxxxx" ${t.enableRecaptchaV2 ? "" : "disabled"} />
@@ -3205,21 +3211,57 @@ The resend option for the template will be disabled.</label></div>
 
                 <!-- App Check -->
                 <div class="pb-2">
-                    <label class="flex items-center gap-2 text-sm font-medium mb-3"><input type="checkbox" class="checkbox-glass" id="tpl-appcheck" ${t.enableAppCheck ? "checked" : ""} onchange="document.getElementById('tpl-appcheck-secret').disabled = !this.checked; document.getElementById('tpl-appcheck-issuer').disabled = !this.checked;" /> App Check</label>
-                    <div class="pl-6 grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="field-label">App Check Secret Key</label>
-                            <input class="input-glass font-mono disabled:opacity-50 disabled:cursor-not-allowed transition" id="tpl-appcheck-secret" value="${escapeHtml(t.appCheckSecret || "")}" placeholder="Your Symmetric HS256 Secret" ${t.enableAppCheck ? "" : "disabled"} />
-                        </div>
-                        <div>
-                            <label class="field-label">Expected Issuer (Optional)</label>
-                            <select class="input-glass disabled:opacity-50 disabled:cursor-not-allowed transition" id="tpl-appcheck-issuer" ${t.enableAppCheck ? "" : "disabled"}>
-                                <option value="">— Any Issuer —</option>
-                                ${issuers.map((iss) => `<option value="${iss.value}" ${t.appCheckIssuer === iss.value ? "selected" : ""}>${iss.name}</option>`).join("")}
-                            </select>
-                        </div>
-                    </div>
-                </div>
+    <label class="flex items-center gap-2 text-sm font-medium mb-3">
+        <input type="checkbox" class="checkbox-glass" id="tpl-appcheck" 
+            ${t.enableAppCheck ? "checked" : ""} 
+            onchange="
+                const issuer = document.getElementById('tpl-appcheck-issuer');
+                const secret = document.getElementById('tpl-appcheck-secret');
+                issuer.disabled = !this.checked;
+                
+                // الحقل السري يظهر فقط للـ CustomApp أو الخيار الافتراضي
+                const requiresSecret = ['CustomApp', ''].includes(issuer.value);
+                secret.disabled = !(this.checked && requiresSecret);
+            " /> 
+        App Check
+    </label>
+
+    <div class="pl-6 grid grid-cols-2 gap-4">
+        <!-- 1. قائمة المُصدر (Issuer / Provider) -->
+        <div>
+            <label class="field-label">Expected Issuer (Provider)</label>
+            <select class="input-glass disabled:opacity-50 disabled:cursor-not-allowed transition" 
+                id="tpl-appcheck-issuer" 
+                ${t.enableAppCheck ? "" : "disabled"}
+                onchange="
+                    const isChecked = document.getElementById('tpl-appcheck').checked;
+                    const secretInput = document.getElementById('tpl-appcheck-secret');
+                    
+                    const requiresSecret = ['CustomApp', ''].includes(this.value);
+                    
+                    secretInput.disabled = !(isChecked && requiresSecret);
+                    
+                    // تفريغ الحقل السري تلقائياً لو اختار مزود خارجي مثل Firebase أو Auth0
+                    if (!requiresSecret) {
+                        secretInput.value = '';
+                    }
+                ">
+                <option value="">— Any Issuer (Default) —</option>
+                ${issuers.map((iss) => `<option value="${iss.value}" ${t.appCheckIssuer === iss.value ? "selected" : ""}>${iss.name}</option>`).join("")}
+            </select>
+        </div>
+
+        <!-- 2. حقل المفتاح السري (يظهر فقط عند الحاجة) -->
+        <div>
+            <label class="field-label">App Check Secret Key</label>
+            <input class="input-glass font-mono disabled:opacity-50 disabled:cursor-not-allowed transition" 
+                id="tpl-appcheck-secret" 
+                value="${escapeHtml(t.appCheckSecret || "")}" 
+                placeholder="Required for Custom App (HS256)" 
+                ${t.enableAppCheck && ["CustomApp", ""].includes(t.appCheckIssuer || "") ? "" : "disabled"} />
+        </div>
+    </div>
+</div>
             </div>
           </div>
       </div>
@@ -5314,7 +5356,7 @@ async function openAdminTemplateDetail(id) {
               <span>${t.doSaveInHistory ? "Yes" : "No"}</span>
             </div>
             <div class="flex justify-between"><span class="text-tertiary">Auto-Reply</span><span>${t.enableAutoReply ? `Yes (ID: ${escapeHtml(t.autoReplyTemplateId || "—")})` : "Off"}</span></div>
-            <div class="flex justify-between"><span class="text-tertiary">reCAPTCHA v2</span><span>${t.enableRecaptchaV2 ? "Enabled" : "Off"}</span></div>
+            <div class="flex justify-between"><span class="text-tertiary">Google reCAPTCHA (v2 & v3)</span><span>${t.enableRecaptchaV2 ? "Enabled" : "Off"}</span></div>
             <div class="flex justify-between"><span class="text-tertiary">App Check</span><span>${t.enableAppCheck ? (t.issuer ? `Enabled <span class="text-xs text-secondary">(${escapeHtml(t.issuer)})</span>` : "Enabled (Any Issuer)") : "Off"}</span></div>
           </div>
           
