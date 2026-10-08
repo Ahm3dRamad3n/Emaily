@@ -160,8 +160,8 @@ export const AuthService = {
       tokenStore.clear();
     }
   },
-  verifyEmail: (email) =>
-    post(`/auth/send-verification-email`, { email }, { auth: false }),
+  verifyEmail: (email, target) =>
+    post(`/auth/send-verification-email`, { email, target }, { auth: false }),
   forgotPassword: (email) =>
     post("/auth/forgot-password", { email }, { auth: false }),
   resetPassword: ({ token, newPassword }) =>

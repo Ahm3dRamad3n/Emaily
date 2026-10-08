@@ -992,7 +992,7 @@ async function handleRegister(form) {
     if (!token) {
       const email = $("#register-email").value.trim();
 
-      await AuthService.verifyEmail(email);
+      await AuthService.verifyEmail(email, "register");
 
       showToast("Verification email sent. Check your inbox.", "success");
       return;
@@ -4115,14 +4115,22 @@ async function subscribeToPlan(planId) {
    PAGE: account.html
    ============================================================ */
 async function initAccountPage(user) {
+  const token = new URLSearchParams(window.location.search).get("token");
+  const hasToken = Boolean(token);
+
   $("#page-content").innerHTML = `
     <h1 class="font-display text-2xl font-bold mb-1">Account</h1>
     <p class="text-secondary text-sm mb-8">Update your profile details.</p>
     <div class="glass glass-card p-6 max-w-md mb-6">
-      <form id="form-account" class="space-y-4">
+      <form id="form-account" 
+      data-token="${hasToken ? token : ""}"
+        data-email="${escapeHtml(user.devNotificationEmail || user.email || "")}"
+      class="space-y-4">
         <div><label class="field-label" for="account-name">Name</label><input class="input-glass" id="account-name" value="${escapeHtml(user.fullName || "")}" /></div>
         <div><label class="field-label" for="account-notify-email">Notification email</label><input class="input-glass" id="account-notify-email" value="${escapeHtml(user.devNotificationEmail || user.email || "")}" /></div>
-        <button type="submit" class="btn btn-aurora btn-sm">Save changes</button>
+        <button type="submit" 
+        id="btn-save-account"
+        class="btn btn-aurora btn-sm">${hasToken ? "Verify & Save" : "Save changes"}</button>
       </form>
     </div>
     <div class="glass glass-card p-6 max-w-md mb-6">
@@ -4163,11 +4171,35 @@ async function initAccountPage(user) {
   `;
 }
 
-async function saveAccount() {
+async function saveAccount(token, email) {
+  const fullName = $("#account-name").value.trim();
+  const notifyEmail = $("#account-notify-email").value.trim();
+
+  if (!fullName) {
+    showToast("Name cannot be empty.", "error");
+    return;
+  }
+
+  if (!notifyEmail) {
+    showToast("Notification email cannot be empty.", "error");
+    return;
+  }
+
+  if (!token && notifyEmail !== email) {
+    try {
+      await AuthService.verifyEmail(notifyEmail, "account");
+      showToast("Verification email sent. Please check your inbox.", "success");
+    } catch (err) {
+      showToast(friendlyError(err), "error");
+    }
+    return;
+  }
+
   try {
     await UserService.updateMe({
-      fullName: $("#account-name").value.trim(),
-      devNotificationEmail: $("#account-notify-email").value.trim(),
+      token,
+      fullName,
+      devNotificationEmail: notifyEmail,
     });
     showToast("Profile updated.", "success");
   } catch (err) {
@@ -6100,7 +6132,9 @@ document.addEventListener("submit", async (e) => {
   if (form.id === "form-login") return handleLogin(form);
   if (form.id === "form-register") return handleRegister(form);
   if (form.id === "form-reset-password") return handleResetPassword(form);
-  if (form.id === "form-account") return saveAccount();
+  if (form.id === "form-account") {
+    return saveAccount(form.dataset.token, form.dataset.email);
+  }
   if (form.id === "form-change-password") return changePassword(form);
   if (form.id === "form-project-settings")
     return saveProjectSettings(form.dataset.id);
