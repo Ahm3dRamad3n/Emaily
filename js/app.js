@@ -619,7 +619,14 @@ async function redirectIfAuthed() {
   try {
     await UserService.getMe();
     const redirect = new URLSearchParams(location.search).get("redirect");
-    window.location.href = redirect || urlFor("dashboard");
+    let finalRedirect = urlFor("dashboard");
+
+    // التحقق الصارم: يجب أن يكون الرابط موجوداً، ويبدأ بـ / (مسار داخلي)، ولا يبدأ بـ // (لمنع ثغرة Protocol-relative URL)
+    if (redirect && redirect.startsWith("/") && !redirect.startsWith("//")) {
+      finalRedirect = redirect;
+    }
+
+    window.location.href = finalRedirect;
   } catch (err) {
     showToast(friendlyError(err), "error");
   }
