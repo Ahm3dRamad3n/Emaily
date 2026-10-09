@@ -80,6 +80,26 @@ function redirectTo(pageKey, query = "") {
   window.location.href = urlFor(pageKey, query);
 }
 
+function validFile(file) {
+  if (file.size > 5 * 1024 * 1024) {
+    showToast("Attachment size exceeds 5MB limit.", "error");
+    return false;
+  }
+  const allowedExtensions = [".pdf", ".png", ".jpg", ".jpeg", ".docx"];
+  const fileExtension = file.name
+    .slice(file.name.lastIndexOf("."))
+    .toLowerCase();
+  if (!allowedExtensions.includes(fileExtension)) {
+    showToast(
+      "Attachment type not allowed. Allowed types: " +
+        allowedExtensions.join(", "),
+      "error",
+    );
+    return false;
+  }
+  return true;
+}
+
 /* ============================================================
    DOM & format helpers
    ============================================================ */
@@ -271,6 +291,7 @@ const ICONS = {
    Layout: navbar + sidebar
    ============================================================ */
 function getPublicNavbarHTML() {
+  const user = JSON.parse(sessionStorage.getItem("currentUserData"));
   return `
       <div
         class="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between"
@@ -296,11 +317,19 @@ function getPublicNavbarHTML() {
         </nav>
 
         <div class="flex items-center gap-3">
-          <a
-            href="${urlFor("login")}"
-            class="btn btn-ghost btn-sm hidden sm:!inline-flex"
-            >Sign in</a
-          >
+        ${
+          user
+            ? `<a
+              href="${urlFor("dashboard")}"
+              class="btn btn-ghost btn-sm hidden sm:!inline-flex"
+              >Dashboard</a
+             >`
+            : `<a
+              href="${urlFor("login")}"
+              class="btn btn-ghost btn-sm hidden sm:!inline-flex"
+              >Sign in</a
+            >`
+        }
           <a href="${urlFor("register")}" class="btn btn-aurora btn-sm"
             >Get your API key</a
           >
@@ -345,7 +374,11 @@ function getPublicNavbarHTML() {
           <a href="${urlFor("landing", "#security")}" class="nav-link py-2">Security</a>
           <a href="${urlFor("docs")}" class="nav-link py-2">Docs</a>
           <a href="${urlFor("pricing")}" class="nav-link py-2">Pricing</a>
-          <a href="${urlFor("login")}" class="nav-link py-2">Sign in</a>
+          ${
+            user
+              ? `<a href="${urlFor("dashboard")}" class="nav-link py-2">Dashboard</a>`
+              : `<a href="${urlFor("login")}" class="nav-link py-2">Sign in</a>`
+          }
         </nav>
       </div>`;
 }
@@ -522,10 +555,14 @@ function getPublicFooterHTML() {
             © 2026 Emaily. All rights reserved.
           </p>
           <p class="text-tertiary text-xs text-center md:text-right">
+          <a href="${urlFor("support")}" class="hover:text-aurora transition">Support</a>        
+           <span>&middot;</span>
+           <span>
             Designed and Developed by 
             <a href="https://ahm3dramad3n.github.io/portfolio/en/" target="_blank" rel="noopener noreferrer" class="text-secondary hover:text-aurora font-semibold transition">
               Ahmed Ramadan
             </a>
+            </span>
           </p>
         </div>
         
@@ -593,9 +630,8 @@ async function mountAppShell(activePage) {
   let user;
   try {
     user = await UserService.getMe();
-    currentSubscriptionData = await BillingService.getSubscription().catch(
-      () => null,
-    );
+    sessionStorage.setItem("currentUserData", JSON.stringify(user));
+    currentSubscriptionData = await BillingService.getSubscription();
   } catch {
     redirectTo("login", "?redirect=" + encodeURIComponent(currentPath()));
     return null;
@@ -635,6 +671,7 @@ async function redirectIfAuthed() {
 async function handleLogout() {
   try {
     await AuthService.logout();
+    sessionStorage.removeItem("currentUserData");
   } catch {
     /* clear locally regardless */
   }
@@ -733,6 +770,7 @@ function wireForm(name, rules) {
 
       let file = $("#c-attach").files[0];
       if (file) {
+        if (!validFile(file)) return;
         payload.append("Complaint.Attachment", file);
       }
     } else if (name === "suggestion") {
@@ -3428,6 +3466,8 @@ async function uploadAttachment(file, maxAttachments) {
   const templateId = $("#form-template-editor")?.dataset.templateId;
   if (!templateId || !file) return;
 
+  if (!validFile(file)) return;
+
   const fd = new FormData();
   fd.append("file", file);
 
@@ -4245,6 +4285,7 @@ async function deleteAccount() {
 
   try {
     await UserService.deleteMe();
+    sessionStorage.removeItem("currentUserData");
     tokenStore.clear();
     showToast("Account deleted.", "info");
     redirectTo("landing");
