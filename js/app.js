@@ -3493,7 +3493,7 @@ async function removeAttachment(attachmentId, maxAttachments) {
   if (!isConfirmed) return;
 
   try {
-    await TemplateService.removeAttachment(templateId, attachmentId);
+    await TemplateService.removeAttachment(attachmentId);
     showToast("Attachment removed.", "success");
     const template = await TemplateService.getById(templateId);
     $("#tab-attachments").innerHTML = attachmentsSectionHTML(

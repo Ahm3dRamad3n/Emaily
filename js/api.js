@@ -253,9 +253,8 @@ export const TemplateService = {
     put(`/templates/${templateId}/status`, { isActive }),
   remove: (templateId) => del(`/templates/${templateId}`), // soft delete
   addAttachment: (templateId, formData) =>
-    post(`/templates/${templateId}/attachments`, formData),
-  removeAttachment: (templateId, attachmentId) =>
-    del(`/templates/${templateId}/attachments/${attachmentId}`),
+    post(`/attachments/upload/${templateId}`, formData),
+  removeAttachment: (attachmentId) => del(`/attachments/${attachmentId}`),
   unlockTemplate: (templateId) => put(`/templates/${templateId}/unlock`),
 };
 
