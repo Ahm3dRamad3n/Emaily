@@ -213,9 +213,11 @@ function closeModal() {
 function setBtnLoading(btn, loading, label) {
   if (!btn) return;
   btn.disabled = loading;
-  btn.innerHTML = loading
-    ? `<span class="spinner"></span> ${escapeHtml(label)}`
-    : escapeHtml(label);
+  if (loading) {
+    btn.innerHTML = `<span class="spinner"></span> ${escapeHtml(label)}`;
+  } else {
+    btn.innerHTML = label;
+  }
 }
 
 /* ============================================================
@@ -5698,21 +5700,34 @@ document.addEventListener("click", async (e) => {
   const target = e.target.closest("[data-action]");
   if (!target) return;
   const a = target.dataset.action;
+  const originalContent = target.innerHTML;
+  setBtnLoading(target, true, "Please wait...");
 
   switch (a) {
-    case "logout":
-      return handleLogout();
-    case "forgot-password":
-      return handleForgotPassword();
-    case "submit-forgot-password":
-      return submitForgotPassword();
-
-    case "open-project-modal":
-      return openProjectModal();
-    case "submit-project":
-      return submitProject();
-    case "delete-project":
-      return deleteProjectAndRedirect(target.dataset.id);
+    case "logout": {
+      handleLogout();
+      break;
+    }
+    case "forgot-password": {
+      handleForgotPassword();
+      break;
+    }
+    case "submit-forgot-password": {
+      submitForgotPassword();
+      break;
+    }
+    case "open-project-modal": {
+      openProjectModal();
+      break;
+    }
+    case "submit-project": {
+      submitProject();
+      break;
+    }
+    case "delete-project": {
+      deleteProjectAndRedirect(target.dataset.id);
+      break;
+    }
     case "set-project-tab": {
       const id = target.dataset.projectId;
       const tab = target.dataset.tab;
@@ -5737,64 +5752,95 @@ document.addEventListener("click", async (e) => {
       $("#project-tab-panel").innerHTML = panel;
       break;
     }
-    case "regenerate-keys":
-      return regenerateKeys(target.dataset.id);
+    case "regenerate-keys": {
+      regenerateKeys(target.dataset.id);
+      break;
+    }
 
-    case "open-service-modal":
-      return openServiceModal();
-    case "pick-provider":
-      return renderProviderForm(target.dataset.type);
-    case "save-service":
-      return saveService(target.dataset.id, target.dataset.type);
-    case "trigger-oauth-flow":
-      return triggerOAuthFlow();
-    case "open-link-service-modal":
-      return openLinkServiceModal(target.dataset.projectId);
-    case "submit-link-service":
-      return submitLinkService(target.dataset.projectId);
-    case "unlink-service":
-      return unlinkService(target.dataset.projectId, target.dataset.serviceId);
-    case "edit-service":
-      return openServiceModal(JSON.parse(target.dataset.service));
-    case "delete-service":
-      return deleteService(target.dataset.id);
-    case "toggle-service":
-      return toggleServiceStatus(
+    case "open-service-modal": {
+      openServiceModal();
+      break;
+    }
+    case "pick-provider": {
+      renderProviderForm(target.dataset.type);
+      break;
+    }
+    case "save-service": {
+      saveService(target.dataset.id, target.dataset.type);
+      break;
+    }
+    case "trigger-oauth-flow": {
+      triggerOAuthFlow();
+      break;
+    }
+    case "open-link-service-modal": {
+      openLinkServiceModal(target.dataset.projectId);
+      break;
+    }
+    case "submit-link-service": {
+      submitLinkService(target.dataset.projectId);
+      break;
+    }
+    case "unlink-service": {
+      unlinkService(target.dataset.projectId, target.dataset.serviceId);
+      break;
+    }
+    case "edit-service": {
+      openServiceModal(JSON.parse(target.dataset.service));
+      break;
+    }
+    case "delete-service": {
+      deleteService(target.dataset.id);
+      break;
+    }
+    case "toggle-service": {
+      toggleServiceStatus(
         target.dataset.id,
         target.dataset.active === "true",
         target,
       );
-    case "open-integration-modal":
-      return openIntegrationModal(target.dataset.projectId);
-    case "submit-integration":
-      return submitIntegration(target.dataset.projectId);
-    case "toggle-integration":
+      break;
+    }
+    case "open-integration-modal": {
+      openIntegrationModal(target.dataset.projectId);
+      break;
+    }
+    case "submit-integration": {
+      submitIntegration(target.dataset.projectId);
+      break;
+    }
+    case "toggle-integration": {
       toggleIntegrationStatus(
         target.dataset.id,
         target.dataset.active === "true",
         target,
       );
       break;
-    case "edit-integration":
+    }
+    case "edit-integration": {
       openEditIntegrationModal(
         target.dataset.id,
         target.dataset.projectId,
         target.dataset.integration,
       );
       break;
-    case "submit-edit-integration":
+    }
+    case "submit-edit-integration": {
       submitEditIntegration(
         target.dataset.id,
         target.dataset.projectId,
         target,
       );
       break;
-    case "delete-integration":
-      return deleteIntegration(target.dataset.id, target.dataset.projectId);
+    }
+    case "delete-integration": {
+      deleteIntegration(target.dataset.id, target.dataset.projectId);
+      break;
+    }
 
     case "set-template-tab": {
       const tabId = target.dataset.tab;
-      if (!tabId) return;
+      if (!tabId) break;
 
       const url = new URL(location.href);
       url.searchParams.set("tab", tabId);
@@ -5812,33 +5858,45 @@ document.addEventListener("click", async (e) => {
       document.getElementById("tab-" + tabId)?.classList.remove("hidden");
       break;
     }
-    case "delete-template":
-      return deleteTemplate(target.dataset.id);
-    case "toggle-template-status":
-      return toggleTemplateStatus(
+    case "delete-template": {
+      deleteTemplate(target.dataset.id);
+      break;
+    }
+    case "toggle-template-status": {
+      toggleTemplateStatus(
         target.dataset.id,
         target.dataset.active === "true",
         target,
       );
-    case "pick-attachment":
+      break;
+    }
+    case "pick-attachment": {
       const fileInput = $("#attachment-input");
-      if (!fileInput) return;
+      if (!fileInput) break;
       fileInput.dataset.maxAttachments = target.dataset.maxAttachments;
-      return fileInput.click();
-    case "remove-attachment":
-      return removeAttachment(
+      fileInput.click();
+      break;
+    }
+    case "remove-attachment": {
+      removeAttachment(
         target.dataset.attachmentId,
         target.dataset.maxAttachments,
       );
-    case "open-snippet-modal":
-      return await openCodeSnippetModal(
+      break;
+    }
+    case "open-snippet-modal": {
+      await openCodeSnippetModal(
         JSON.parse(decodeURIComponent(target.dataset.template)),
       );
-    case "test-now":
-      return openTestModal(
+      break;
+    }
+    case "test-now": {
+      openTestModal(
         JSON.parse(decodeURIComponent(target.dataset.template)),
         JSON.parse(decodeURIComponent(target.dataset.project)),
       );
+      break;
+    }
     case "switch-snippet-tab": {
       $$(".snippet-tab").forEach((btn) =>
         btn.classList.toggle("is-active", btn === target),
@@ -5849,10 +5907,12 @@ document.addEventListener("click", async (e) => {
           panel.dataset.snippetPanel !== target.dataset.lang,
         ),
       );
-      return;
+      break;
     }
-    case "copy-text":
-      return copyToClipboard(target.dataset.copy, target);
+    case "copy-text": {
+      copyToClipboard(target.dataset.copy, target);
+      break;
+    }
     case "toggle-reveal-key": {
       const el = $("#keys-private");
       const revealed = el.dataset.revealed === "true";
@@ -5863,11 +5923,11 @@ document.addEventListener("click", async (e) => {
       target.innerHTML = revealed
         ? `${ICONS.eye} Show`
         : `${ICONS.eyeOff} Hide`;
-      return;
+      break;
     }
     case "toggle-password": {
       const container = target.closest(".relative");
-      if (!container) return;
+      if (!container) break;
 
       const passInput = container.querySelector("input");
       if (passInput && passInput.type === "password") {
@@ -5877,99 +5937,136 @@ document.addEventListener("click", async (e) => {
         passInput.type = "password";
         target.innerHTML = `${ICONS.eye}`;
       }
-      return;
+      break;
     }
 
-    case "toggle-project-status":
-      return toggleProjectStatus(
+    case "toggle-project-status": {
+      toggleProjectStatus(
         target.dataset.id,
         target.dataset.active === "true",
         target,
       );
+      break;
+    }
 
-    case "delete-account":
-      return deleteAccount();
-
-    case "view-submission":
-      return viewSubmission(target.dataset.id, target.dataset.projectId);
-    case "retry-submission":
-      return retrySubmission(target.dataset.id, target.dataset.projectId);
-
-    case "subscribe-plan":
+    case "delete-account": {
+      deleteAccount();
+      break;
+    }
+    case "view-submission": {
+      viewSubmission(target.dataset.id, target.dataset.projectId);
+      break;
+    }
+    case "retry-submission": {
+      retrySubmission(target.dataset.id, target.dataset.projectId);
+      break;
+    }
+    case "subscribe-plan": {
       const planId = target.dataset.id;
       const planName = target.dataset.name;
 
       if (planName && planName.trim().toLowerCase() === "free") {
-        return openFreePlanDowngradeModal(planId, planName);
+        openFreePlanDowngradeModal(planId, planName);
       } else {
-        return openContactAdminModal(planName);
+        openContactAdminModal(planName);
       }
-    case "confirm-downgrade":
+      break;
+    }
+    case "confirm-downgrade": {
       closeModal();
-      return await subscribeToPlan(target.dataset.id);
-    case "view-subscription-details":
-      return openSubscriptionDetailsModal();
-
-    case "toggle-user-status":
-      return toggleUserStatus(
+      await subscribeToPlan(target.dataset.id);
+      break;
+    }
+    case "view-subscription-details": {
+      openSubscriptionDetailsModal();
+      break;
+    }
+    case "toggle-user-status": {
+      toggleUserStatus(
         target.dataset.id,
         target.dataset.active === "true",
         target,
       );
-    case "admin-view-user":
-      return openAdminViewUserModal(target.dataset.id);
-    case "admin-open-subscribe":
-      return openAdminSubscribeModal(target.dataset.id, target.dataset.name);
+      break;
+    }
+    case "admin-view-user": {
+      openAdminViewUserModal(target.dataset.id);
+      break;
+    }
+    case "admin-open-subscribe": {
+      openAdminSubscribeModal(target.dataset.id, target.dataset.name);
+      break;
+    }
     case "confirm-admin-subscribe": {
       const planId = $("#admin-target-plan-id")?.value;
       const userId = target.dataset.userid;
       if (planId && userId) {
-        return await subscribeToPlanAdmin(planId, userId);
+        await subscribeToPlanAdmin(planId, userId);
       }
 
       break;
     }
-    case "view-user-projects":
-      return openAdminUserProjectsModal(target.dataset.id, target.dataset.name);
-    case "view-admin-project":
-      return openAdminProjectDrilldown(target.dataset.id);
-    case "view-admin-template":
-      return openAdminTemplateDetail(target.dataset.id);
-    case "view-admin-service":
-      return openAdminServiceDetail(target.dataset.id);
-
-    case "view-ban-details":
-      return openBanDetailsModal(target.dataset.id);
-    case "open-ban-modal":
-      return openBanModal(target.dataset.operation, target.dataset.id);
-    case "submit-ban":
-      return submitBan();
+    case "view-user-projects": {
+      openAdminUserProjectsModal(target.dataset.id, target.dataset.name);
+      break;
+    }
+    case "view-admin-project": {
+      openAdminProjectDrilldown(target.dataset.id);
+      break;
+    }
+    case "view-admin-template": {
+      openAdminTemplateDetail(target.dataset.id);
+      break;
+    }
+    case "view-admin-service": {
+      openAdminServiceDetail(target.dataset.id);
+      break;
+    }
+    case "view-ban-details": {
+      openBanDetailsModal(target.dataset.id);
+      break;
+    }
+    case "open-ban-modal": {
+      openBanModal(target.dataset.operation, target.dataset.id);
+      break;
+    }
+    case "submit-ban": {
+      submitBan();
+      break;
+    }
     case "delete-ban": {
       const reason = $("#ban-reason").value.trim();
-      return deleteBanned(target.dataset.id, reason);
+      deleteBanned(target.dataset.id, reason);
+      break;
     }
     case "reduce-ban": {
       const reason = $("#ban-reason").value.trim();
-      return reduceBanned(target.dataset.id, reason);
+      reduceBanned(target.dataset.id, reason);
+      break;
     }
-
-    case "open-plan-modal":
-      return openPlanModal();
-    case "edit-plan":
-      return openPlanModal(JSON.parse(target.dataset.plan));
-    case "submit-plan":
-      return submitPlan();
-
+    case "open-plan-modal": {
+      openPlanModal();
+      break;
+    }
+    case "edit-plan": {
+      openPlanModal(JSON.parse(target.dataset.plan));
+      break;
+    }
+    case "submit-plan": {
+      submitPlan();
+      break;
+    }
     case "pagination-jump-btn": {
       const input = document.getElementById("pagination-custom-input");
       let page = parseInt(input?.value);
       const maxPage =
         parseInt(document.getElementById("pagination-total")?.textContent) || 1;
-      if (isNaN(page)) return;
+      if (isNaN(page)) break;
       if (page < 1) page = 1;
       if (page > maxPage) page = maxPage;
       document.getElementById("pagination-page").textContent = page; // تمرير رقم الصفحه
       input.value = "";
+      //break; don't break here
     }
     case "pagination-browse": {
       const scope = target.dataset.scope;
@@ -5982,33 +6079,31 @@ document.addEventListener("click", async (e) => {
           page,
           target.dataset.projectid,
         );
-        return;
-      }
-      if (scope === "users") return loadAdminUsers(page);
-      if (scope === "projects") return loadAdminProjects(page);
-      if (scope === "templates") return loadAdminTemplates(page);
-      if (scope === "services") return loadAdminServices(page);
-      if (scope === "banned") return lodAdminBanned(page);
-      if (scope === "logs") return loadAdminLogs(page);
-      return;
+      } else if (scope === "users") loadAdminUsers(page);
+      else if (scope === "projects") loadAdminProjects(page);
+      else if (scope === "templates") loadAdminTemplates(page);
+      else if (scope === "services") loadAdminServices(page);
+      else if (scope === "banned") lodAdminBanned(page);
+      else if (scope === "logs") loadAdminLogs(page);
+      break;
     }
-
-    case "confirm-ok":
+    case "confirm-ok": {
       if (window.__confirmResolver) {
         window.__confirmResolver(true);
         window.__confirmResolver = null;
       }
       closeModal();
       break;
-
+    }
     case "confirm-cancel":
-    case "close-modal":
+    case "close-modal": {
       if (window.__confirmResolver) {
         window.__confirmResolver(false);
         window.__confirmResolver = null;
       }
       closeModal();
       break;
+    }
     case "close-beta-banner": {
       // 1. إخفاء الشريط من الشاشة بأنيميشن بسيط أو بإخفائه فوراً
       const banner = document.getElementById("beta-banner");
@@ -6020,7 +6115,6 @@ document.addEventListener("click", async (e) => {
       sessionStorage.setItem("hideBetaBanner", "true");
       break;
     }
-
     case "unlock-card": {
       const cardId = target.dataset.id;
       if (cardId.startsWith("p")) {
@@ -6065,23 +6159,26 @@ document.addEventListener("click", async (e) => {
       } else {
         console.assert(false, "Unknown card type for unlocking: " + cardId);
       }
+      break;
     }
-
     case "close-toc": {
       const panel = document.getElementById(target.dataset.target);
       target.classList.add("hidden");
       panel.setAttribute("aria-expanded", "false");
+      break;
     }
     case "toggle-toc": {
       const panel = document.getElementById(target.dataset.target);
       const isOpen = !panel.classList.contains("hidden");
       panel.classList.toggle("hidden");
       target.setAttribute("aria-expanded", String(!isOpen));
+      break;
     }
-
-    default:
-      return;
+    default: {
+      console.assert(false, `Unknown data-action: ${a}`);
+    }
   }
+  setBtnLoading(target, false, originalContent);
 });
 
 /* ============================================================
@@ -6170,21 +6267,50 @@ document.addEventListener("input", (e) => {
 document.addEventListener("submit", async (e) => {
   const form = e.target;
   e.preventDefault();
-  if (form.id === "form-login") return handleLogin(form);
-  if (form.id === "form-register") return handleRegister(form);
-  if (form.id === "form-reset-password") return handleResetPassword(form);
-  if (form.id === "form-account") {
-    return saveAccount(form.dataset.token, form.dataset.email);
+
+  const submitBtn = e.submitter;
+  if (!submitBtn) return;
+  const originalContent = submitBtn.innerHTML;
+  setBtnLoading(submitBtn, true, "Please wait...");
+
+  switch (form.id) {
+    case "form-login": {
+      handleLogin(form);
+      break;
+    }
+    case "form-register": {
+      handleRegister(form);
+      break;
+    }
+    case "form-reset-password": {
+      handleResetPassword(form);
+      break;
+    }
+    case "form-account": {
+      saveAccount(form.dataset.token, form.dataset.email);
+      break;
+    }
+    case "form-change-password": {
+      changePassword(form);
+      break;
+    }
+    case "form-project-settings": {
+      saveProjectSettings(form.dataset.id);
+      break;
+    }
+    case "form-template-editor": {
+      submitTemplateEditor(
+        form.dataset.projectId,
+        form.dataset.templateId || null,
+        form.dataset.maxAttachments,
+      );
+      break;
+    }
+    default: {
+      console.assert(false, `Unknown formId: ${form.id}`);
+    }
   }
-  if (form.id === "form-change-password") return changePassword(form);
-  if (form.id === "form-project-settings")
-    return saveProjectSettings(form.dataset.id);
-  if (form.id === "form-template-editor")
-    return submitTemplateEditor(
-      form.dataset.projectId,
-      form.dataset.templateId || null,
-      form.dataset.maxAttachments,
-    );
+  setBtnLoading(submitBtn, false, originalContent);
 });
 
 /* ============================================================
