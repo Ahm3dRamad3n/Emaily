@@ -1499,34 +1499,7 @@ function serviceCard(s) {
 }
 
 function integrationCard(i) {
-  let configDisplay = "";
-  try {
-    const cfg =
-      typeof i.configJson === "string"
-        ? JSON.parse(i.configJson)
-        : i.configJson || {};
-
-    if (
-      i.integrationType === "TelegramBot" ||
-      i.integrationType === "TELEGRAMBOT"
-    ) {
-      configDisplay = cfg.chatId || "—";
-    } else if (
-      i.integrationType === "GoogleSheets" ||
-      i.integrationType === "GOOGLESHEETS"
-    ) {
-      configDisplay = cfg.sheetUrl || "—";
-    } else if (
-      i.integrationType === "AiSummary" ||
-      i.integrationType === "AISUMMARY"
-    ) {
-      configDisplay = "AI Auto-summarization active";
-    } else {
-      configDisplay = JSON.stringify(cfg);
-    }
-  } catch (e) {
-    configDisplay = i.configJson || "—";
-  }
+  let configDisplay = i.configJson;
 
   return `
   <div class="glass glass-card p-4 sm:p-5 flex items-center justify-between gap-4" data-card-id="${i.id}">
@@ -2227,12 +2200,7 @@ async function submitIntegration(projectId) {
   try {
     const integration = await IntegrationService.create(projectId, {
       integrationType: $("#int-type").value,
-      configJson:
-        $("#int-type").value === "TelegramBot"
-          ? { chatId: $("#int-config").value.trim() }
-          : $("#int-type").value === "GoogleSheets"
-            ? { sheetUrl: $("#int-config").value.trim() }
-            : {},
+      configJson: $("#int-config").value.trim() || "not configured",
     });
     showToast("Integration added.", "success");
     closeModal();
@@ -2320,14 +2288,7 @@ async function submitEditIntegration(integrationId, projectId, btnEl) {
     return;
   }
 
-  let configJson = {};
-  if (type === "TelegramBot") {
-    configJson = { chatId: configValue };
-  } else if (type === "GoogleSheets") {
-    configJson = { sheetUrl: configValue };
-  } else if (type === "AiSummary") {
-    configJson = {};
-  }
+  let configJson = configValue || "not configured";
 
   const originalText = btnEl.textContent;
   btnEl.disabled = true;
